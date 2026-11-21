@@ -1,0 +1,230 @@
+@use "sass:list";
+@use "sass:map";
+@use "sass:math";
+@use "sass:string";
+
+$font-display: "Manrope", "Segoe UI", Arial, sans-serif !default;
+$font-ui: "DM Sans", "Segoe UI", Arial, sans-serif !default;
+$font-data: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace !default;
+
+$breakpoint-mobile-max: 767px !default;
+$breakpoint-tablet-min: 768px !default;
+$breakpoint-desktop-min: 1024px !default;
+$typography-reference-root: 16px !default;
+
+// Pairs: (nominal font-size in px, nominal line-height in px).
+// Heading line-height is intentionally below 1.5; this is allowed for the
+// default rendering. The app must accommodate USER-ENFORCED text spacing.
+$type-desktop: (
+  display: (64px, 80px),
+  h1: (48px, 60px),
+  h2: (36px, 48px),
+  h3: (30px, 40px),
+  h4: (24px, 36px),
+  h5: (20px, 30px),
+  h6: (18px, 27px),
+  body-lg: (18px, 30px),
+  body: (16px, 26px),
+  body-sm: (14px, 23px),
+  button: (16px, 24px),
+  input: (16px, 24px),
+  label: (14px, 21px),
+  navigation: (14px, 21px),
+  caption: (13px, 21px),
+  helper: (14px, 23px),
+  overline: (12px, 18px),
+  kpi-lg: (40px, 50px),
+  table-cell: (14px, 22px),
+) !default;
+
+$type-mobile: (
+  display: (36px, 45px),
+  h1: (32px, 40px),
+  h2: (28px, 38px),
+  h3: (24px, 32px),
+  h4: (20px, 30px),
+  h5: (18px, 27px),
+  h6: (16px, 24px),
+  body-lg: (16px, 27px),
+  body: (16px, 26px),
+  body-sm: (14px, 23px),
+  button: (16px, 24px),
+  input: (16px, 24px),
+  label: (14px, 21px),
+  navigation: (14px, 21px),
+  caption: (13px, 21px),
+  helper: (14px, 23px),
+  overline: (12px, 18px),
+  kpi-lg: (32px, 40px),
+  table-cell: (14px, 22px),
+) !default;
+
+// Families: Manrope for display/headings/KPI, DM Sans for dense product UI.
+$type-family: (
+  display: $font-display,
+  h1: $font-display,
+  h2: $font-display,
+  h3: $font-display,
+  h4: $font-display,
+  h5: $font-display,
+  h6: $font-display,
+  body-lg: $font-ui,
+  body: $font-ui,
+  body-sm: $font-ui,
+  button: $font-ui,
+  input: $font-ui,
+  label: $font-ui,
+  navigation: $font-ui,
+  caption: $font-ui,
+  helper: $font-ui,
+  overline: $font-ui,
+  kpi-lg: $font-display,
+  table-cell: $font-ui,
+) !default;
+
+// Use actual loaded font faces/weights. All weights stay within 400–700.
+$type-weight: (
+  display: 700,
+  h1: 700,
+  h2: 700,
+  h3: 600,
+  h4: 600,
+  h5: 600,
+  h6: 600,
+  body-lg: 400,
+  body: 400,
+  body-sm: 400,
+  button: 600,
+  input: 400,
+  label: 600,
+  navigation: 600,
+  caption: 400,
+  helper: 400,
+  overline: 600,
+  kpi-lg: 700,
+  table-cell: 400,
+) !default;
+
+// Avoid compressed small text. Only large headlines have very slight negative
+// tracking; users must still be able to override letter-spacing to 0.12em.
+$type-tracking: (
+  display: -0.0125em,
+  h1: -0.01em,
+  h2: 0,
+  h3: 0,
+  h4: 0,
+  h5: 0,
+  h6: 0,
+  body-lg: 0,
+  body: 0,
+  body-sm: 0,
+  button: 0,
+  input: 0,
+  label: 0,
+  navigation: 0,
+  caption: 0,
+  helper: 0,
+  overline: 0.06em,
+  kpi-lg: 0,
+  table-cell: 0,
+) !default;
+
+// Helper: convert design-time px reference values to scalable rem values.
+@function _to-rem($px) {
+  @if math.unit($px) != "px" {
+    @error "Typography size must be in px; received #{$px}.";
+  }
+
+  @return math.div($px, $typography-reference-root) * 1rem;
+}
+
+// Computes a viewport-fluid rem-based size between the supplied tablet and
+// desktop breakpoints. Since rem is present in both the lower/upper bounds,
+// browser text magnification/zoom is not reduced to an all-vw-only size.
+@function _fluid-size($mobile, $desktop) {
+  @if $mobile == $desktop {
+    @return _to-rem($mobile);
+  }
+
+  $range: $breakpoint-desktop-min - $breakpoint-tablet-min;
+
+  @if $range <= 0px {
+    @error "Desktop breakpoint must exceed tablet breakpoint.";
+  }
+
+  @if $desktop < $mobile {
+    @error "The desktop type size must be >= the mobile type size.";
+  }
+
+  $slope: math.div($desktop - $mobile, $range);
+  $intercept: $mobile - $slope * $breakpoint-tablet-min;
+
+  @return string.unquote(
+    "clamp(#{_to-rem($mobile)}, calc(#{_to-rem($intercept)} + #{$slope * 100}vw), #{_to-rem($desktop)})"
+  );
+}
+
+// Resolve one semantic role to font family, font size, line height and tracking.
+// Examples:
+//   .page-title { @include type-style(h1); }
+//   .field-label { @include type-style(label); }
+//   .metric-value { @include type-style(kpi-lg); }
+@mixin type-style($role) {
+  $mobile: map.get($type-mobile, $role);
+  $desktop: map.get($type-desktop, $role);
+
+  @if $mobile == null or $desktop == null {
+    @error "Unknown typography role: #{$role}";
+  }
+
+  @if map.get($type-family, $role) == null or
+      map.get($type-weight, $role) == null or
+      map.get($type-tracking, $role) == null {
+    @error "Typography metadata missing for role: #{$role}";
+  }
+
+  $mobile-font: list.nth($mobile, 1);
+  $mobile-leading: list.nth($mobile, 2);
+  $desktop-font: list.nth($desktop, 1);
+  $desktop-leading: list.nth($desktop, 2);
+
+  @if $mobile-font <= 0px or $desktop-font <= 0px or
+      $mobile-leading <= 0px or $desktop-leading <= 0px {
+    @error "Typography sizes must be positive for #{$role}.";
+  }
+
+  font-family: map.get($type-family, $role);
+  font-size: _to-rem($mobile-font);
+  font-weight: map.get($type-weight, $role);
+  // Unitless line-height scales when font-size is overridden by the user.
+  line-height: math.div($mobile-leading, $mobile-font);
+  letter-spacing: map.get($type-tracking, $role);
+
+  @if $role == kpi-lg {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  @if $desktop-font != $mobile-font {
+    @media (min-width: #{$breakpoint-tablet-min}) {
+      font-size: _fluid-size($mobile-font, $desktop-font);
+    }
+  }
+
+  @media (min-width: #{$breakpoint-desktop-min}) {
+    font-size: _to-rem($desktop-font);
+    line-height: math.div($desktop-leading, $desktop-font);
+  }
+}
+
+@mixin numeric-tabular {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+// Optional for IDs, serial numbers, metrics, timestamps and code-like values.
+// Respects whichever font-size/line-height is inherited from the role.
+@mixin technical-data {
+  font-family: $font-data;
+  font-weight: 500;
+  letter-spacing: 0;
+  @include numeric-tabular;
+}

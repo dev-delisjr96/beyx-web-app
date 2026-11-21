@@ -1,0 +1,823 @@
+// =============================================================================
+// OBSIDIAN DESIGN SYSTEM — COLOR PALETTE
+// Dark-first · Blue Glassmorphism
+//
+// Fonte: Figma "PROJECTS" › Beyx Web
+//   • "Color Palette and Meanings"          (dark)
+//   • "Color Palette and Meanings — Light"  (light)
+// I commenti di ogni token riportano le note d'uso lasciate in Figma.
+//
+// Modulo "puro": solo variabili, funzioni e mixin, non emette CSS finché non
+// includi `color-custom-properties()`, `glass-card*()` o il mixin focus. Si può quindi
+// `@use`-are da ogni *.module.scss senza duplicare output.
+//
+// Revisione WCAG 2.2 AA (con attenzione anche al focus AAA):
+// • le varianti ALPHA rimangono per DECORAZIONE e status background;
+// • border di input/stati e i bordi interattivi hanno contrasto >= 3:1;
+// • ogni pulsante pieno usa il suo token solid + on-solid (>=4.5:1);
+// • i mixin glass-card* sono opachi DI DEFAULT quando contengono testo,
+//   perché una superficie traslucida sopra immagini/gradienti non è certificabile.
+// I token primitivi sono colori, NON combinazioni valide universalmente:
+// rispettare sempre gli usi commentati e verificare le coppie reali.
+// =============================================================================
+
+@use "sass:color";
+@use "sass:map";
+@use "sass:meta";
+
+// -----------------------------------------------------------------------------
+// Helper privati
+// -----------------------------------------------------------------------------
+
+// Stesso colore con un'opacità diversa. Es: _alpha(#22c55e, 0.12)
+@function _alpha($color, $alpha) {
+  @return color.change($color, $alpha: $alpha);
+}
+
+// Set completo di uno stato semantico; separa ruoli che necessitano
+// requisiti differenti (icone, testi, CTA, bordi decorativi / necessari).
+// `base` = icone su normali superfici del tema (3:1), NON colore di CTA.
+// `text` = testo e contorni necessari (4.5:1 sulle superfici del tema).
+// `solid` + `on-solid` = sfondo e testo delle CTA piene (4.5:1).
+// `background` / `border-soft` = decorativi e non sufficienti da soli a
+// identificare un controllo o il suo stato; `border` = bordo NECESSARIO.
+@function _status-set($base, $text, $bg-alpha: 0.12, $border-alpha: 0.3, $solid: null) {
+  @if $solid == null {
+    $solid: $base;
+  }
+
+  @return (
+    base: $base,
+    text: $text,
+    solid: $solid,
+    on-solid: #ffffff,
+    background: _alpha($base, $bg-alpha),
+    border: $text,
+    border-soft: _alpha($base, $border-alpha)
+  );
+}
+
+// map.get con errore leggibile a compile-time se il token non esiste.
+@function _get($map, $key, $label) {
+  @if not map.has-key($map, $key) {
+    @error "[colors] #{$label}: token `#{$key}` sconosciuto. Disponibili: #{map.keys($map)}";
+  }
+
+  @return map.get($map, $key);
+}
+
+// Alcune chiavi (violet, cyan, teal, pink, orange, indigo) sono keyword colore
+// CSS e Sass le legge come colori: le riportiamo a stringa per i nomi.
+@function _ident($key) {
+  @if meta.type-of($key) == "color" {
+    @return meta.inspect($key);
+  }
+
+  @return $key;
+}
+
+// =============================================================================
+// DARK (default)
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// Foundation — livelli di profondità, dal più lontano al più vicino
+// -----------------------------------------------------------------------------
+$foundation: (
+  // deep — #060A10
+  // • Sfondo globale della pagina/app. Es: il body dietro tutto il contenuto
+  // • Sfondo delle zone più profonde. Es: l'area dietro un hero con glow blu
+  deep: #060a10,
+  // base — #080D14
+  // • Sfondo principale delle sezioni di layout. Es: l'area contenuti della dashboard
+  // • Sfondo di sidebar e navbar a filo pagina. Es: la sidebar di navigazione
+  base: #080d14,
+  // raised — #0D1520
+  // • Elementi leggermente sollevati dal fondo. Es: header sticky o footer
+  // • Sfondo dei campi di input. Es: barra di ricerca o textarea
+  raised: #0d1520,
+  // surface — #101E31
+  // • Card e pannelli opachi (senza blur). Es: card di un deck nella lista
+  // • Dropdown e popover opachi. Es: menu a tendina di ordinamento
+  surface: #101e31,
+  // surface-hover — #16273B
+  // • Stato hover delle superfici. Es: riga di tabella sotto il cursore
+  // • Elemento selezionato in una lista. Es: voce di menu attiva
+  surface-hover: #16273b,
+  // glass-tint — #234973
+  // • Tinta di base dei livelli glass (le rgba glass derivano da qui). Es: calcolare glass(default)
+  // • Chip/badge pieni neutro-blu. Es: tag di categoria
+  glass-tint: #234973,
+);
+
+// -----------------------------------------------------------------------------
+// Brand blues — scala assoluta, identica in dark e light (cambia solo l'uso)
+// -----------------------------------------------------------------------------
+$blue: (
+  // blue-50 — #E5F1FF
+  // • Testo su sfondi blu intensi. Es: label su un badge blue-700
+  // • Riflessi chiari in illustrazioni/gradienti. Es: punto luce di un glow
+  50: #e5f1ff,
+  // blue-100 — #C9E1FF
+  // • Icone e testo su superfici blu scure. Es: icona dentro un banner blue-800
+  100: #c9e1ff,
+  // blue-200 — #A4CEFF
+  // • Link visitati o testo blu secondario. Es: link già cliccato
+  // • Icone in hover su sfondi scuri. Es: icona della toolbar in hover
+  200: #a4ceff,
+  // blue-300 — #8BC3FF
+  // • Focus ring (uguale a $focus). Es: outline di un input in focus
+  // • Link in hover. Es: "Scopri di più" sotto il cursore
+  300: #8bc3ff,
+  // blue-400 — #6CABFF
+  // • Indicatore attivo e grafica sui normali sfondi dark (non su glass-tint pieno).
+  // • NON usare come testo su glass-tint pieno: lì usa text-interactive (blue-300).
+  400: #6cabff,
+  // blue-500 — #2B69EC (prima #3B82F6: 3.68:1 con il bianco).
+  // • Brand primario + CTA piena con testo bianco (4.85:1).
+  // • Progress e grafici: 3:1 anche su dark surface-hover.
+  500: #2b69ec,
+  // blue-600 — #1D4ED8 (prima #2563EB)
+  // • Hover del pulsante primario con testo bianco (6.70:1).
+  // • Stato selezionato di checkbox/toggle su fondi chiari.
+  600: #1d4ed8,
+  // blue-700 — #1E40AF (prima #1D4ED8)
+  // • Pressed/active del primario con testo bianco (8.72:1).
+  // • Badge blu pieni con testo blue-50.
+  700: #1e40af,
+  // blue-800 — #1E3A8A
+  // • Banner e blocchi brand scuri. Es: banner promozionale in cima alla pagina
+  // • Bordo di bottoni secondari pieni. Es: bottone "Duplica"
+  800: #1e3a8a,
+  // blue-900 — #172C54
+  // • Sfondo soft di chip/filtri selezionati. Es: filtro attivo
+  // • Traccia (track) di progress bar e slider. Es: parte vuota della barra
+  900: #172c54,
+  // blue-950 — #101E31
+  // • Uguale a foundation surface. Es: card opache
+  // • Stop scuro dei gradienti brand. Es: gradiente blue-500 → blue-950
+  950: #101e31,
+);
+
+// -----------------------------------------------------------------------------
+// Text
+// -----------------------------------------------------------------------------
+$text: (
+  // text-primary — #F5F9FF
+  // • Titoli e testo principale. Es: H1 di pagina, nome di una card
+  // • Valori numerici importanti. Es: KPI o statistiche in evidenza
+  primary: #f5f9ff,
+  // text-secondary — #D5E1F0
+  // • Testo di paragrafo. Es: descrizione di una card
+  // • Label dei form. Es: "Nome del deck"
+  secondary: #d5e1f0,
+  // text-tertiary — #B7C8DF (prima #A0B3CE: 4.33:1 su glass-tint pieno)
+  // • Metadati e info di supporto. Es: data di creazione, autore
+  // • Intestazioni di colonna. Es: header di una tabella
+  tertiary: #b7c8df,
+  // text-muted — #ABC0DD (prima #8398B3: 3.13:1 su glass-tint pieno)
+  // • Placeholder degli input. Es: "Cerca un componente…"
+  // • Testo disabilitato o helper text. Es: "Massimo 20 caratteri"
+  muted: #abc0dd,
+  // text-interactive — #8BC3FF (= blue-300; prima #6CABFF)
+  // • Link inline nel testo. Es: "Scopri di più"
+  // • Bottoni ghost/testuali. Es: "Annulla" o "Vedi tutto"
+  interactive: map.get($blue, 300),
+);
+
+// -----------------------------------------------------------------------------
+// Semantic states — base (icon) · text · solid/on-solid (CTA)
+//                 · background (decorative alpha) · border (strong)
+//                 · border-soft (decorative alpha)
+// -----------------------------------------------------------------------------
+$status: (
+  // success — #22C55E
+  // • Icone e indicatori di esito positivo. Es: check verde, pallino "online"
+  // • CTA "Conferma deck": usare success-solid + success-on-solid, NON base.
+  // success-text — #86E6AF
+  // • Testo dentro alert/badge di successo. Es: "Deck completato"
+  // • Variazioni positive. Es: "+12%" in una statistica
+  // success-bg — rgba(34,197,94,0.12)
+  // • Sfondo di badge/alert di successo. Es: badge "Valido"
+  // • Evidenziare un elemento riuscito. Es: riga salvata correttamente
+  // success-border — #86E6AF (3:1+; necessario per input validato)
+  // success-border-soft — rgba(34,197,94,0.3) (solo decorazione)
+  // • Bordo di alert/badge di successo se è essenziale (non solo cosmetico).
+  // • Bordo di un input validato. Es: campo email corretto
+  success: _status-set(#22c55e, #86e6af, $solid: #15803d),
+
+  // warning — #F59E0B
+  // • Icone di attenzione. Es: triangolo "!" accanto a un campo
+  // • Indicatori di stato a rischio. Es: pallino "in scadenza"
+  // warning-text — #FCD281
+  // • Testo dentro alert di avviso. Es: "Deck incompleto: mancano 2 parti"
+  // • Note di attenzione inline. Es: "Modifiche non salvate"
+  // warning-bg — rgba(245,158,11,0.12)
+  // • Sfondo di alert/badge di avviso. Es: badge "Incompleto"
+  // • Evidenziare righe da controllare. Es: elemento con dati mancanti
+  // warning-border — #FCD281 (3:1+; necessario per input con warning)
+  // warning-border-soft — rgba(245,158,11,0.3) (solo decorazione)
+  // • Bordo di alert di avviso. Es: banner "Modifiche non salvate"
+  // • Bordo di un input con avviso non bloccante. Es: password debole
+  warning: _status-set(#f59e0b, #fcd281, $solid: #92400e),
+
+  // error — #F05266
+  // • CTA "Elimina deck": usare error-solid + error-on-solid, NON base.
+  // • Icone di errore. Es: icona "x" in un campo non valido
+  // error-text — #FFA0AD
+  // • Messaggi di errore. Es: "Questo campo è obbligatorio" sotto un input
+  // • Testo in alert di errore. Es: "Deck non valido"
+  // error-bg — rgba(240,82,102,0.12)
+  // • Sfondo di alert/badge di errore. Es: badge "Non valido"
+  // • Hover di azioni distruttive ghost. Es: voce "Elimina" in un menu
+  // error-border — #FFA0AD (3:1+; necessario per input in errore)
+  // error-border-soft — rgba(240,82,102,0.3) (solo decorazione)
+  // • Bordo di un input in errore. Es: campo email non valido
+  // • Bordo di alert di errore. Es: toast "Salvataggio fallito"
+  error: _status-set(#f05266, #ffa0ad, $solid: #b4233c),
+
+  // info — #38BDF8
+  // • Icone informative. Es: icona "i" accanto a un titolo
+  // • Indicatori di processo. Es: spinner o stato "In elaborazione"
+  // info-text — #91DFFF
+  // • Testo di messaggi informativi. Es: "Puoi aggiungere fino a 3 deck"
+  // • Suggerimenti inline. Es: tip sotto un form
+  // info-bg — rgba(56,189,248,0.12)
+  // • Sfondo di banner/tooltip informativi. Es: banner "Novità"
+  // • Sfondo di badge informativi. Es: badge "Beta"
+  // info-border — #91DFFF (3:1+; necessario per elementi informativi)
+  // info-border-soft — rgba(56,189,248,0.3) (solo decorazione)
+  // • Bordo di banner informativi. Es: contorno del banner "Novità"
+  // • Bordo di callout di documentazione. Es: box "Nota"
+  info: _status-set(#38bdf8, #91dfff, $solid: #075985),
+
+  // neutral — #94A3B8
+  // • Icone di stato neutro. Es: pallino "offline" o "bozza"
+  // • Elementi disabilitati. Es: icona di un bottone disabilitato
+  // neutral-text — #D2DCE9
+  // • Testo di badge neutri. Es: "Bozza", "Archiviato"
+  // • Testo di tag generici. Es: "Tutti"
+  // neutral-bg — rgba(148,163,184,0.12)
+  // • Sfondo di badge/tag neutri. Es: badge "Bozza"
+  // • Sfondo di chip non selezionati. Es: filtri disponibili
+  // neutral-border — #D2DCE9 (3:1+; necessario per elementi neutri)
+  // neutral-border-soft — rgba(148,163,184,0.25) (solo decorazione)
+  // • Bordo necessario di badge/tag neutri; il bordo solo estetico usa border-soft.
+  // • Bordo di elementi disabilitati. Es: input disabilitato
+  neutral: _status-set(#94a3b8, #d2dce9, $border-alpha: 0.25, $solid: #475569),
+);
+
+// -----------------------------------------------------------------------------
+// Glassmorphism — glass-tint a diverse opacità
+// -----------------------------------------------------------------------------
+$_glass-tint: map.get($foundation, glass-tint);
+
+$glass: (
+  // glass-subtle — rgba(35,73,115,0.12)
+  // • Glass leggero per elementi annidati. Es: item di una lista dentro un pannello glass
+  // • Hover leggero di elementi ghost. Es: bottone icona in hover
+  subtle: _alpha($_glass-tint, 0.12),
+  // glass-default — rgba(35,73,115,0.23)
+  // • Superficie glass decorativa. Per card con testo il mixin glass-card usa backing opaco.
+  // • Navbar trasparente sticky con blur. Es: header sopra il contenuto in scroll
+  default: _alpha($_glass-tint, 0.23),
+  // glass-elevated — rgba(35,73,115,0.34)
+  // • Livelli decorativi sopra altri glass; modali e popover con testo usano backing opaco.
+  // • Card in hover o selezionata. Es: card deck quando la si seleziona
+  elevated: _alpha($_glass-tint, 0.34),
+);
+
+// -----------------------------------------------------------------------------
+// Borders — distinguere visual design da informazioni essenziali (1.4.11).
+// • subtle e decorative = divisori/card senza significato: <3:1 ammesso.
+// • default = input e bottoni outline; >=3:1 anche sopra glass-tint pieno.
+// • highlight = selezione/hover informativo; >=3:1 anche sopra glass-tint.
+// Il bordo glass decorativo NON usa `default`.
+// -----------------------------------------------------------------------------
+$_border-tint: #7db5ff;
+
+$border: (
+  subtle: _alpha($_border-tint, 0.12),
+  decorative: _alpha($_border-tint, 0.22),
+  default: _alpha($_border-tint, 0.75),
+  highlight: _alpha($_border-tint, 0.82),
+);
+
+// -----------------------------------------------------------------------------
+// Accents
+// -----------------------------------------------------------------------------
+$accent: (
+  // violet — #C4B5FD (prima #A78BFA: 3.40:1 su glass-tint pieno)
+  // • Tag e categorie. Es: tag "Premium"
+  // • Serie secondaria nei grafici. Es: seconda linea di un line chart
+  violet: #c4b5fd,
+  // cyan — #22D3EE
+  // • Dati live o in evidenza. Es: valore aggiornato in tempo reale
+  // • Serie nei grafici. Es: barre di confronto
+  cyan: #22d3ee,
+  // teal — #2DD4BF
+  // • Categorie alternative. Es: tag "Stamina"
+  // • Serie nei grafici. Es: area di un grafico
+  teal: #2dd4bf,
+  // pink — #F9A8D4 (prima #F472B6: 3.49:1 su glass-tint pieno)
+  // • Feature speciali. Es: badge "Evento"
+  // • Categorie e avatar. Es: colore dell'iniziale di un avatar
+  pink: #f9a8d4,
+  // orange — #FDBA74 (prima #FB923C: 4.08:1 su glass-tint pieno)
+  // • Badge "hot"/in tendenza. Es: "Più usato"
+  // • Serie nei grafici. Es: quarta serie di un grafico a barre
+  orange: #fdba74,
+  // indigo — #A5B4FC (prima #818CF8: 3.10:1 su glass-tint pieno)
+  // • Gradienti insieme al blu brand. Es: gradiente blue-500 → indigo nell'hero
+  // • Avatar e categorie. Es: tag "Difesa"
+  indigo: #a5b4fc,
+);
+
+// Testo sopra ACCENT PIENI: in dark usare foreground scuro.
+// Es.: badge "Premium" fondo accent.violet e testo accent-on.violet.
+// Per accenti usati come SOLO testo su superficie, usare accent.[name].
+$accent-on: (
+  violet: #060a10,
+  cyan: #060a10,
+  teal: #060a10,
+  pink: #060a10,
+  orange: #060a10,
+  indigo: #060a10,
+);
+
+// -----------------------------------------------------------------------------
+// Semantic Action — foreground/background/hover/pressed, validi con 14px text.
+// Non codificare direttamente "blue-500" nei componenti; usa action.
+// -----------------------------------------------------------------------------
+$action: (
+  primary: (
+    background: map.get($blue, 500),
+    foreground: #ffffff,
+    hover: map.get($blue, 600),
+    pressed: map.get($blue, 700)
+  )
+);
+
+// -----------------------------------------------------------------------------
+// Additional UI
+// -----------------------------------------------------------------------------
+
+// focus — #8BC3FF (= blue-300)
+// • Outline :focus-visible per la navigazione da tastiera. Es: outline 2px solid su bottoni e link
+// • Ring degli input in focus. Es: campo di ricerca attivo
+$focus: map.get($blue, 300);
+// Colore di separazione del doppio focus ring (vedi `focus-visible-ring`).
+$focus-contrast: #060a10;
+
+// overlay — rgba(2,6,12,0.72)
+// • Backdrop dietro le modali. Es: modale "Elimina deck?"
+// • Scrim di drawer e menu mobile. Es: menu hamburger aperto
+$overlay: _alpha(#02060c, 0.72);
+
+// =============================================================================
+// LIGHT
+// Stessa struttura e stessi nomi della dark: ogni token ha la sua versione light.
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// Foundation — in light la profondità si inverte: il fondo è leggermente tinto,
+// i livelli più vicini all'utente diventano bianchi.
+// -----------------------------------------------------------------------------
+$light-foundation: (
+  // deep — #E9EEF5 · fondo globale pagina (il più "lontano")
+  deep: #e9eef5,
+  // base — #F0F4F9 · sfondo sezioni di layout, sidebar, navbar
+  base: #f0f4f9,
+  // raised — #F7F9FC · header sticky, footer, sfondo input
+  raised: #f7f9fc,
+  // surface — #FFFFFF · card e pannelli opachi, dropdown
+  surface: #ffffff,
+  // surface-hover — #EDF3FB · hover/selezionato: si scurisce con una punta di blu
+  surface-hover: #edf3fb,
+  // glass-tint — #FFFFFF
+  // Light: il vetro è bianco, non blu
+  // • Le rgba glass light derivano dal bianco, non da #234973
+  // • Per i chip/badge neutro-blu che in dark usavano glass-tint, in light usa blue-100. Es: tag di categoria
+  glass-tint: #ffffff,
+);
+
+// -----------------------------------------------------------------------------
+// Brand blues — INVARIATA (scala assoluta, non un ruolo). Cambia solo l'uso.
+// -----------------------------------------------------------------------------
+$light-blue: (
+  // blue-50 — in light diventa sfondo di chip/badge/banner blu soft
+  50: map.get($blue, 50),
+  // blue-100 — sfondo di elementi selezionati (es. filtro attivo), sostituisce blue-900;
+  // usalo anche al posto di glass-tint per i chip neutro-blu
+  100: map.get($blue, 100),
+  // blue-200 — bordi di elementi blu soft e track di progress bar
+  200: map.get($blue, 200),
+  // blue-300 / blue-400
+  // Light: uso diverso dalla dark
+  // • In light NON usarli per testo, link o focus: il contrasto col bianco è insufficiente.
+  // • Solo uso decorativo. Es: serie di un grafico, illustrazioni, bordi di elementi blu soft
+  // • Al loro posto: link → blue-700 (text-interactive), focus → blue-600.
+  300: map.get($blue, 300),
+  400: map.get($blue, 400),
+  // blue-500 — #2B69EC: CTA con bianco 4.85:1; anche icone/grafici.
+  500: map.get($blue, 500),
+  // blue-600 / blue-700
+  // Light: prendono i ruoli che in dark avevano 300/400/500
+  // • blue-600 = hover primario (6.70:1 col bianco), focus ring.
+  // • blue-700 = pressed primario (8.72:1 col bianco), link e bottoni ghost.
+  600: map.get($blue, 600),
+  700: map.get($blue, 700),
+  // blue-800 — pressed del primario + testo su sfondi blu soft (es. su blue-50)
+  800: map.get($blue, 800),
+  // blue-900 — titoli dentro banner/callout blu
+  900: map.get($blue, 900),
+  // blue-950
+  // Light: NON è più "surface"
+  // • In dark era lo sfondo delle card; in light le card sono bianche (surface #FFFFFF)
+  // • Usalo per testi brand molto scuri. Es: titolo dentro un banner blue-50
+  950: map.get($blue, 950),
+);
+
+// -----------------------------------------------------------------------------
+// Text
+// -----------------------------------------------------------------------------
+$light-text: (
+  // text-primary — #0B1526 · titoli e testo principale (~18:1 sul bianco)
+  primary: #0b1526,
+  // text-secondary — #2A3A52 · paragrafi e label (~11:1)
+  secondary: #2a3a52,
+  // text-tertiary — #4A5D78 · metadati, header tabella (6.7:1 bianco / 5.8:1 su deep)
+  tertiary: #4a5d78,
+  // text-muted — #52657D (prima #5F7189: 4.28:1 su fondo deep)
+  // • Placeholder, helper text e testi secondari reali. Inattivi: trattare a parte.
+  muted: #52657d,
+  // text-interactive — #1E40AF (= nuovo blue-700) · link e bottoni testuali
+  // (il blue-400 della dark qui non si leggerebbe)
+  interactive: map.get($blue, 700),
+);
+
+// -----------------------------------------------------------------------------
+// Semantic states — schema light.
+// • base: icone / indicatori (3:1 contro ogni foundation light).
+// • text: messaggi e bordi necessari (>=4.5:1 su superfici e status bg).
+// • solid / on-solid: colori dei pulsanti pieni con testo bianco (>=4.5:1).
+// • border: colore OPACO per input e stati che comunicano significato (>=3:1).
+// • background e border-soft: decorativi, non sostituiscono un bordo necessario.
+// -----------------------------------------------------------------------------
+$light-status: (
+  // success base: prima #16A34A, 2.83:1 su deep; ora #15803D.
+  success: _status-set(#15803d, #166534, 0.1, 0.3, $solid: #15803d),
+  // warning base: prima #D97706, 2.73:1 su deep; ora #B45309.
+  warning: _status-set(#b45309, #92400e, 0.1, 0.35, $solid: #b45309),
+  // error base: invariato per icone, ma solid più scuro per sicurezza.
+  error: _status-set(#d93a50, #a3162b, 0.1, 0.3, $solid: #b4233c),
+  // info base: invariato per icone, solid più scuro per testo bianco.
+  info: _status-set(#0284c7, #075985, 0.1, 0.3, $solid: #075985),
+  // neutral base: invariato per icone, solid più scuro per testo bianco.
+  neutral: _status-set(#64748b, #334155, 0.1, 0.25, $solid: #475569),
+);
+
+// -----------------------------------------------------------------------------
+// Glassmorphism — bianco semi-trasparente sopra il fondo tinto
+//
+// Light: da solo il vetro bianco non stacca dal fondo chiaro
+// • Se contiene testo, glass-card-light() usa un backing opaco e bordo decorative + ombra.
+// • Es: card anteprima deck → usa il mixin glass-card-light, non solo il background
+// -----------------------------------------------------------------------------
+$_glass-tint-light: map.get($light-foundation, glass-tint);
+
+$light-glass: (
+  subtle: _alpha($_glass-tint-light, 0.45),
+  default: _alpha($_glass-tint-light, 0.65),
+  elevated: _alpha($_glass-tint-light, 0.82),
+);
+
+// -----------------------------------------------------------------------------
+// Borders Light
+// • subtle/decorative per card/separatori (non devono identificare controlli).
+// • default per campi input/bottoni outline: >=3:1 sulle superfici light.
+// • highlight per selezione/hover significativo: >=3:1 sulle superfici light.
+// • Il riflesso superiore dei glass è separato (decorativo).
+// -----------------------------------------------------------------------------
+$light-border: (
+  subtle: _alpha(map.get($blue, 900), 0.08),
+  decorative: _alpha(map.get($blue, 900), 0.14),
+  default: _alpha(map.get($blue, 900), 0.55),
+  highlight: _alpha(map.get($blue, 600), 0.75),
+);
+
+// Riflesso "luce" sul bordo superiore dei glass in light.
+$light-glass-reflection: _alpha(#ffffff, 0.9);
+
+// -----------------------------------------------------------------------------
+// Accents light — tutte le tonalità sono leggibili anche come testo normale
+// (>=4.5:1 su `deep`, il fondo più critico), oltre che icone e grafici.
+// -----------------------------------------------------------------------------
+$light-accent: (
+  violet: #6d45da,  // prima #7C5CF0
+  cyan: #0e7490,    // prima #0891B2
+  teal: #0f766e,    // prima #0D9488
+  pink: #be185d,    // prima #DB2777
+  orange: #b93809,  // prima #EA580C
+  indigo: #4f46e5,  // prima #6366F1
+);
+
+// Testo sopra ACCENT PIENI in light: tutte le tinte sono scure,
+// quindi il foreground accessibile è bianco.
+$light-accent-on: (
+  violet: #ffffff,
+  cyan: #ffffff,
+  teal: #ffffff,
+  pink: #ffffff,
+  orange: #ffffff,
+  indigo: #ffffff,
+);
+
+// -----------------------------------------------------------------------------
+// Additional UI
+// -----------------------------------------------------------------------------
+
+// focus — #1D4ED8 (= nuovo blue-600): alto contrasto sulle superfici light.
+$light-focus: map.get($blue, 600);
+$light-focus-contrast: #ffffff;
+
+// La stessa CTA primary è valida in light e dark; il ruolo resta semantico.
+$light-action: (
+  primary: (
+    background: map.get($blue, 500),
+    foreground: #ffffff,
+    hover: map.get($blue, 600),
+    pressed: map.get($blue, 700)
+  )
+);
+
+// overlay — #080D14 · 40%: backdrop sempre scuro ma più leggero,
+// la pagina chiara resta intuibile
+$light-overlay: _alpha(map.get($foundation, base), 0.4);
+
+// Ombre — non sono swatch in Figma ma sono richiamate dalle note ("shadow-light md").
+// In dark la profondità la danno i colori, in light servono le ombre.
+$_shadow-tint: map.get($blue, 950);
+
+$light-shadow: (
+  sm: 0 1px 2px _alpha($_shadow-tint, 0.06),
+  md: 0 4px 16px _alpha($_shadow-tint, 0.08),
+  lg: 0 12px 40px _alpha($_shadow-tint, 0.12),
+);
+
+// =============================================================================
+// REGISTRO TEMI — tutte le mappe indicizzate per tema
+// =============================================================================
+$themes: (
+  dark: (
+    foundation: $foundation,
+    blue: $blue,
+    text: $text,
+    status: $status,
+    glass: $glass,
+    border: $border,
+    accent: $accent,
+    accent-on: $accent-on,
+    action: $action,
+    focus: $focus,
+    focus-contrast: $focus-contrast,
+    overlay: $overlay,
+  ),
+  light: (
+    foundation: $light-foundation,
+    blue: $light-blue,
+    text: $light-text,
+    status: $light-status,
+    glass: $light-glass,
+    border: $light-border,
+    accent: $light-accent,
+    accent-on: $light-accent-on,
+    action: $light-action,
+    focus: $light-focus,
+    focus-contrast: $light-focus-contrast,
+    overlay: $light-overlay,
+  ),
+);
+
+// =============================================================================
+// FUNZIONI DI ACCESSO
+// =============================================================================
+
+// Accesso generico per tema.
+//   theme-color(text, primary)                   → #f5f9ff
+//   theme-color(status, error, $variant: border, $theme: light)
+//   theme-color(focus, $theme: light)            → #1d4ed8
+@function theme-color($group, $key: null, $variant: null, $theme: dark) {
+  $tokens: _get($themes, $theme, "theme");
+  $value: _get($tokens, $group, "group");
+
+  @if $key != null {
+    $value: _get($value, $key, $group);
+  }
+
+  @if $variant != null {
+    $value: _get($value, $variant, "#{$group}.#{$key}");
+  }
+
+  @return $value;
+}
+
+// Scorciatoie dark (API storica, invariata)
+@function foundation($key) {
+  @return theme-color(foundation, $key);
+}
+
+@function blue($shade) {
+  @return theme-color(blue, $shade);
+}
+
+@function text-color($key) {
+  @return theme-color(text, $key);
+}
+
+@function status($name, $variant: base) {
+  @return theme-color(status, $name, $variant);
+}
+
+@function glass($key) {
+  @return theme-color(glass, $key);
+}
+
+@function border-color($key) {
+  @return theme-color(border, $key);
+}
+
+@function accent($key) {
+  @return theme-color(accent, $key);
+}
+
+@function accent-on($key) {
+  @return theme-color(accent-on, $key);
+}
+
+// Scorciatoie light
+@function foundation-light($key) {
+  @return theme-color(foundation, $key, $theme: light);
+}
+
+@function blue-light($shade) {
+  @return theme-color(blue, $shade, $theme: light);
+}
+
+@function text-color-light($key) {
+  @return theme-color(text, $key, $theme: light);
+}
+
+@function status-light($name, $variant: base) {
+  @return theme-color(status, $name, $variant, $theme: light);
+}
+
+@function glass-light($key) {
+  @return theme-color(glass, $key, $theme: light);
+}
+
+@function border-color-light($key) {
+  @return theme-color(border, $key, $theme: light);
+}
+
+@function accent-light($key) {
+  @return theme-color(accent, $key, $theme: light);
+}
+
+@function accent-on-light($key) {
+  @return theme-color(accent-on, $key, $theme: light);
+}
+
+@function shadow-light($key) {
+  @return _get($light-shadow, $key, "shadow-light");
+}
+
+// =============================================================================
+// MIXIN
+// =============================================================================
+
+// Proietta un tema su CSS custom properties (stessi nomi di _css-variables.scss).
+//   :root { @include color-custom-properties(dark); }
+//   [data-theme="light"] { @include color-custom-properties(light); }
+@mixin color-custom-properties($theme: dark) {
+  $t: _get($themes, $theme, "theme");
+
+  @each $name, $value in map.get($t, foundation) {
+    --#{_ident($name)}: #{$value};
+  }
+
+  @each $shade, $value in map.get($t, blue) {
+    --blue-#{$shade}: #{$value};
+  }
+
+  @each $name, $value in map.get($t, text) {
+    --text-#{$name}: #{$value};
+  }
+
+  @each $name, $variants in map.get($t, status) {
+    @each $variant, $value in $variants {
+      --status-#{$name}-#{$variant}: #{$value};
+    }
+  }
+
+  @each $name, $value in map.get($t, glass) {
+    --glass-#{$name}: #{$value};
+  }
+
+  @each $name, $value in map.get($t, border) {
+    --border-#{$name}: #{$value};
+  }
+
+  @each $name, $value in map.get($t, accent) {
+    --accent-#{_ident($name)}: #{$value};
+  }
+
+  @each $name, $value in map.get($t, accent-on) {
+    --accent-#{_ident($name)}-foreground: #{$value};
+  }
+
+  @each $name, $variants in map.get($t, action) {
+    @each $variant, $value in $variants {
+      --action-#{$name}-#{$variant}: #{$value};
+    }
+  }
+
+  --focus-ring: #{map.get($t, focus)};
+  --focus-ring-contrast: #{map.get($t, focus-contrast)};
+  --overlay-scrim: #{map.get($t, overlay)};
+}
+
+// Glass card: per default ha un backing OPACO con tinta vetro simulata,
+// così il testo non dipende dai pixel della pagina dietro al blur.
+// Passare $readable: false SOLO per livelli decorativi senza testo/controlli.
+// `border(decorative)` non identifica un input e non necessita di 3:1.
+@mixin glass-card($level: default, $readable: true) {
+  @if $readable {
+    background: color.mix(
+      map.get($foundation, glass-tint),
+      map.get($foundation, raised),
+      color.alpha(glass($level)) * 100%
+    );
+  } @else {
+    background: glass($level);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+  }
+
+  border: 1px solid border-color(decorative);
+  border-radius: 20px;
+
+  @media (width <= 768px) {
+    border-radius: 16px;
+    @if not $readable {
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+  }
+}
+
+// Glass Light: con contenuto leggibile usa base solida colorata
+// e conserva profondità tramite bordo + ombra, non tramite trasparenza.
+@mixin glass-card-light($level: default, $readable: true) {
+  @if $readable {
+    background: color.mix(
+      map.get($light-foundation, surface),
+      map.get($light-foundation, deep),
+      color.alpha(glass-light($level)) * 100%
+    );
+  } @else {
+    background: glass-light($level);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    backdrop-filter: blur(20px) saturate(140%);
+  }
+
+  border: 1px solid border-color-light(decorative);
+  border-top-color: $light-glass-reflection;
+  border-radius: 20px;
+  box-shadow: shadow-light(md);
+
+  @media (width <= 768px) {
+    border-radius: 16px;
+    @if not $readable {
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
+      backdrop-filter: blur(12px) saturate(140%);
+    }
+  }
+}
+
+// Doppio focus ring: anello primario + separatore chiaro/scuro.
+// Usare su :focus-visible, mai solo :focus e non rimuovere outline.
+// Il contrasto con stati specifici o immagini va verificato nel DOM reale.
+// Senza argomento usa CSS custom properties dinamiche e segue il tema attivo.
+// Passare $theme: light/dark solo per creare una versione statica.
+@mixin focus-visible-ring($theme: null) {
+  @if $theme == null {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--focus-ring-contrast);
+  } @else {
+    outline: 2px solid theme-color(focus, $theme: $theme);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px theme-color(focus-contrast, $theme: $theme);
+  }
+}
