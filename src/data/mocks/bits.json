@@ -1,0 +1,62 @@
+[
+  {
+    "id": "BIT_H",
+    "name": "Hexa",
+    "alternativeNames": [],
+    "imgUrl": "",
+    "skins": ["R"],
+    "product": {
+      "line": "",
+      "expansion": "",
+      "isRatchetIntegrated": false
+    },
+    "attributes": {
+      "playType": "bal",
+      "atk": 15,
+      "def": 15,
+      "stm": 15,
+      "dash": 15,
+      "burstRes": 15
+    }
+  },
+  {
+    "id": "BIT_LR",
+    "name": "Low Rush",
+    "alternativeNames": [],
+    "imgUrl": "",
+    "skins": ["V"],
+    "product": {
+      "line": "",
+      "expansion": "",
+      "isRatchetIntegrated": false
+    },
+    "attributes": {
+      "playType": "atk",
+      "atk": 15,
+      "def": 15,
+      "stm": 15,
+      "dash": 15,
+      "burstRes": 15
+    }
+  },
+  {
+    "id": "BIT_M",
+    "name": "Merge",
+    "alternativeNames": [],
+    "imgUrl": "",
+    "skins": ["DEFAULT"],
+    "product": {
+      "line": "",
+      "expansion": "",
+      "isRatchetIntegrated": false
+    },
+    "attributes": {
+      "playType": "bal",
+      "atk": 15,
+      "def": 15,
+      "stm": 15,
+      "dash": 15,
+      "burstRes": 15
+    }
+  }
+]

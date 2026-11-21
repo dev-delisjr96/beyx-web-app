@@ -1,0 +1,73 @@
+[{
+    "id": "B_wizard-rod",
+    "name": "Wizard Rod",
+    "alternativeNames": [],
+    "imgUrl": "",
+    "skins": ["Y"],
+    "product": {
+        "line": "BX",
+        "expansion": "STANDARD",
+        "isRatchetIntegrated": false
+    },
+    "preBuilds": {
+        "saved": [],
+        "popular": ["B_wizard-rod|R_1-60|BIT_H"],
+        "family": []
+    },
+    "attributes": {
+        "playType": "stm",
+        "rotation": "R",
+        "atk": 15,
+        "def": 15,
+        "stm": 15,
+        "weight": "15"
+    }
+},{
+    "id": "B_shark-scale",
+    "name": "Shark Scale",
+    "alternativeNames": [],
+    "imgUrl": "",
+    "skins": ["DEFAULT"],
+    "product": {
+        "line": "BX",
+        "expansion": "STANDARD",
+        "isRatchetIntegrated": false
+    },
+    "preBuilds": {
+        "saved": [],
+        "popular": ["B_shark-scale|R_3-60|BIT_LR"],
+        "family": []
+    },
+    "attributes": {
+        "playType": "atk",
+        "rotation": "R",
+        "atk": 15,
+        "def": 15,
+        "stm": 15,
+        "weight": "15"
+    }
+},{
+    "id": "B_bullet-griffon",
+    "name": "Bullet Griffon",
+    "alternativeNames": [],
+    "imgUrl": "",
+    "skins": ["DEFAULT"],
+    "product": {
+        "line": "UX",
+        "expansion": "",
+        "isRatchetIntegrated": true
+    },
+    "preBuilds": {
+        "saved": [],
+        "popular": ["B_bullet-griffon|BIT_M"],
+        "family": []
+    },
+    "attributes": {
+        "playType": "bal",
+        "rotation": "R",
+        "atk": 15,
+        "def": 15,
+        "stm": 15,
+        "weight": "15"
+    }
+}]
