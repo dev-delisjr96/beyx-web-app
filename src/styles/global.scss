@@ -1,0 +1,47 @@
+// =============================================================================
+// GLOBAL — unico foglio di stile globale, importato una volta in main.tsx.
+//
+// Qui (e solo qui) si emettono le CSS custom properties dei temi.
+// Il ThemeProvider imposta `data-theme` su <html>: dark è il default.
+// =============================================================================
+
+@use "./colors";
+@use "./fonts";
+@use "./responsive";
+
+// -----------------------------------------------------------------------------
+// Token dei temi → CSS custom properties (--surface, --text-primary, …)
+// -----------------------------------------------------------------------------
+:root {
+  @include colors.color-custom-properties(dark);
+
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  @include colors.color-custom-properties(light);
+
+  color-scheme: light;
+}
+
+// -----------------------------------------------------------------------------
+// Base
+// -----------------------------------------------------------------------------
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  @include fonts.type-style(body);
+
+  min-height: 100svh;
+  margin: 0;
+  color: var(--text-primary);
+  background-color: var(--deep);
+  font-synthesis: none;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

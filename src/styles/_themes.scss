@@ -1,0 +1,34 @@
+// =============================================================================
+// THEMES — helper per i *.module.scss
+//
+// Modulo "puro": solo mixin, non emette CSS. Si può `@use`-are da ogni
+// componente senza duplicare output.
+//
+// Le variabili CSS dei due temi sono definite UNA volta in `global.scss`
+// (importato in main.tsx). Nei componenti:
+//   • colori        → sempre `var(--token)`, cambiano da soli col tema
+//   • non-colori    → stile dark di base + override con `@include themes.light`
+//                     (ombre, glass-card, gradienti, immagini di sfondo…)
+//
+//   @use '../../../styles/themes';
+//   .panel {
+//     @include colors.glass-card();
+//     @include themes.light { @include colors.glass-card-light(); }
+//   }
+// =============================================================================
+
+// Regole applicate solo con il tema light (data-theme="light" su <html>).
+// Usare solo dentro un selettore (`&`) di un *.module.scss.
+@mixin light {
+  :global([data-theme="light"]) & {
+    @content;
+  }
+}
+
+// Regole applicate solo con il tema dark. Raramente serve: il dark è il default,
+// quindi di norma basta scrivere lo stile dark come base.
+@mixin dark {
+  :global([data-theme="dark"]) & {
+    @content;
+  }
+}
