@@ -1,0 +1,58 @@
+@use "../../../styles/beyx" as b;
+@use "../../../styles/colors" as c;
+
+.dropDown {
+  @include b.field;
+
+  inline-size: 100%;
+  border-width: 0.5px;
+}
+
+.open {
+  border-width: 1px;
+}
+
+.trigger,
+.option {
+  @include b.button-reset;
+
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  block-size: 44px;
+
+  &:focus-visible {
+    @include c.focus-visible-ring;
+
+    outline-offset: -2px;
+  }
+}
+
+.caret {
+  color: var(--text-primary);
+  transition: rotate 0.15s ease;
+}
+
+.open .caret {
+  rotate: 180deg;
+}
+
+.options {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  li + li .option {
+    border-top: 0.5px solid var(--border-subtle);
+  }
+}
+
+.option {
+  background: var(--surface);
+
+  &:hover {
+    background: var(--surface-hover);
+  }
+}

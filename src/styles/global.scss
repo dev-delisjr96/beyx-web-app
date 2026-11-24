@@ -1,0 +1,52 @@
+// Stili globali: proietta i token di _colors.scss e _beyx.scss come CSS custom
+// properties. Il tema attivo è scelto da `data-theme` su <html> (ThemeProvider).
+
+@use "colors" as c;
+@use "beyx" as b;
+@use "fonts" as f;
+
+:root,
+[data-theme="dark"] {
+  @include c.color-custom-properties(dark);
+  @include b.beyx-custom-properties(dark);
+
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  @include c.color-custom-properties(light);
+  @include b.beyx-custom-properties(light);
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizelegibility;
+}
+
+body {
+  min-height: 100svh;
+  margin: 0;
+  font-family: f.$font-ui;
+  color: var(--text-primary);
+  background: var(--deep);
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}

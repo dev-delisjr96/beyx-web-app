@@ -1,0 +1,25 @@
+@use "../../../styles/beyx" as b;
+@use "../../../styles/colors" as c;
+
+.item {
+  @include b.button-reset;
+
+  display: grid;
+  place-items: center;
+  inline-size: 100%;
+  block-size: 40px;
+  color: var(--beyx-header-foreground);
+  text-align: center;
+  border-top: 0.5px solid var(--beyx-header-item-border);
+
+  &:focus-visible {
+    @include c.focus-visible-ring;
+
+    outline-offset: -2px;
+  }
+}
+
+.active {
+  background: var(--beyx-header-item-active);
+  border-bottom: 0.5px solid var(--beyx-header-item-border);
+}

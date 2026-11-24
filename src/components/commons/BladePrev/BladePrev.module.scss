@@ -1,0 +1,30 @@
+.card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  inline-size: 90px;
+  block-size: 90px;
+  padding: 4px 2px 5px;
+}
+
+.title {
+  padding: 0 2px;
+}
+
+.body {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.weight {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  translate: 0 -50%;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 4px;
+}

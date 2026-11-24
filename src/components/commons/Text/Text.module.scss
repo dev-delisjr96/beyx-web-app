@@ -1,0 +1,67 @@
+@use "../../../styles/beyx" as b;
+
+.text {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.title {
+  @include b.beyx-text(11px, 600, 13px);
+}
+
+.titleStrong {
+  @include b.beyx-text(11px, 700);
+}
+
+.label {
+  @include b.beyx-text(10px, 700);
+}
+
+.meta {
+  @include b.beyx-text(10px, 500, 20px);
+}
+
+.caption {
+  @include b.beyx-text(10px, 400, 13px);
+}
+
+.navigation {
+  @include b.beyx-text(13px, 500, 20px);
+}
+
+.tone-primary {
+  color: var(--text-primary);
+}
+
+.tone-secondary {
+  color: var(--text-secondary);
+}
+
+.tone-tertiary {
+  color: var(--text-tertiary);
+}
+
+.tone-muted {
+  color: var(--text-muted);
+}
+
+.tone-inherit {
+  color: inherit;
+}
+
+.align-start {
+  text-align: start;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.align-end {
+  text-align: end;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

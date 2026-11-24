@@ -1,0 +1,17 @@
+.tag {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.icon {
+  inline-size: 16px;
+  block-size: 16px;
+  object-fit: cover;
+  filter: var(--beyx-mono-asset-filter);
+}
+
+.bit .icon {
+  inline-size: 18px;
+  block-size: 18px;
+}

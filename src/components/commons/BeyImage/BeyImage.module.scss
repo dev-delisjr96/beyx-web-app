@@ -1,0 +1,16 @@
+.image {
+  flex-shrink: 0;
+  inline-size: var(--img-w);
+  block-size: var(--img-h);
+  object-fit: contain;
+}
+
+// Placeholder: disco tratteggiato con anello interno, ricorda una trottola.
+.placeholder {
+  display: block;
+  background:
+    radial-gradient(circle, var(--border-decorative) 0 18%, transparent 19% 100%),
+    var(--glass-subtle);
+  border: 1px dashed var(--border-default);
+  border-radius: 50%;
+}

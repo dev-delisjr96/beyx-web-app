@@ -1,0 +1,25 @@
+@use "../../../styles/beyx" as b;
+@use "../../../styles/colors" as c;
+
+.button {
+  @include b.button-reset;
+
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  color: var(--text-secondary);
+  border-radius: 4px;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--text-primary);
+  }
+
+  &:focus-visible {
+    @include c.focus-visible-ring;
+  }
+}
+
+.active {
+  color: var(--blue-400);
+}

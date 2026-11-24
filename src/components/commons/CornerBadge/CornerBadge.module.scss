@@ -1,0 +1,30 @@
+@use "../../../styles/beyx" as b;
+
+.badge {
+  position: absolute;
+  top: -12px;
+  right: -10px;
+  z-index: 1;
+  inline-size: var(--badge-size);
+  block-size: var(--badge-size);
+  object-fit: contain;
+}
+
+.invalid {
+  display: grid;
+  place-items: center;
+  color: var(--status-error-base);
+  background:
+    linear-gradient(var(--status-error-background), var(--status-error-background)),
+    var(--surface);
+  border: 1px solid var(--status-error-base);
+  border-radius: 50%;
+
+  @include b.beyx-text(16px, 700);
+}
+
+.placeholder {
+  background: var(--glass-default);
+  border: 1px dashed var(--border-decorative);
+  border-radius: 50%;
+}

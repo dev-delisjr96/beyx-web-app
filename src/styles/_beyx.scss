@@ -1,0 +1,172 @@
+// =============================================================================
+// BEYX UI TOKENS — stile "BeyX" (card smussate, glow, flare) dal file Figma
+// "BeyX-UI" (paint/effect style `BeyX/*` e variabili `brand/*`).
+//
+// Modulo "puro" come _colors.scss: emette CSS solo tramite i mixin.
+//   • `beyx-custom-properties(dark|light)` → CSS custom properties per tema
+//   • `beyx-text($size, $weight)`          → testi compatti delle card (DM Sans)
+//   • `card-shine`                         → riflesso diagonale (Deco/Card Shine)
+// I componenti usano SOLO var(--beyx-*) e le var di _colors.scss, così seguono
+// il tema attivo (`data-theme` impostato da ThemeProvider / useTheme).
+// =============================================================================
+
+@use "sass:map";
+@use "sass:math";
+@use "fonts" as f;
+
+$_dark: (
+  // brand/* (Figma, collezione Dark)
+  brand-orange: #ff970c,
+  brand-orange-glow: #ffb026,
+  brand-ice: #e1f4ff,
+  brand-cyan: #65c8ff,
+  brand-blue: #3a91d0,
+  brand-navy: #0a2037,
+
+  // BeyX/Card/Surface · BeyX/Card/Surface Raised
+  card-surface: linear-gradient(135deg, #163d60 0%, #0c2944 45%, #061623 100%),
+  card-surface-raised: linear-gradient(160deg, #0d2440 0%, #16456b 54%, #08182b 100%),
+  // BeyX/Card/Border (versione piatta del gradiente, per `border-color`)
+  card-border: rgba(190, 233, 255, 0.55),
+  card-border-orange: rgba(255, 176, 38, 0.8),
+  // BeyX/Card/Bevel
+  card-shadow: 0 4px 10px rgba(0, 0, 0, 0.3),
+  card-bevel: inset 0 1px 0 rgba(190, 233, 255, 0.1),
+  // BeyX/Card/Shine
+  card-shine: linear-gradient(90deg, rgba(101, 200, 255, 0) 0%, rgba(101, 200, 255, 0.07) 50%, rgba(101, 200, 255, 0) 100%),
+
+  // BeyX/Glow/*
+  glow-blue: 0 0 8px rgba(58, 145, 208, 0.22),
+  glow-orange: 0 0 8px rgba(255, 151, 12, 0.28),
+  glow-success: 0 0 8px rgba(34, 197, 94, 0.22),
+  glow-error: 0 4px 10px rgba(255, 160, 173, 0.5),
+
+  // BeyX/Button/Primary
+  button-primary: linear-gradient(180deg, #1c5480 0%, #173f62 15%, #071a2e 100%),
+  button-primary-foreground: #f5f9ff,
+
+  // BeyX/Surface/Header · BeyX/Header/Shadow
+  header-surface: linear-gradient(180deg, #0d2440 0%, #061623 100%),
+  header-shadow: 0 2px 12px rgba(0, 0, 0, 0.35),
+  header-foreground: #f5f9ff,
+  header-icon: #e5f1ff,
+  header-icon-active: #6cabff,
+  header-item-active: #234973,
+  header-item-border: #e5f1ff,
+
+  // BeyX/Line/Orange Flare · BeyX/Line/Ice Flare
+  flare-orange: linear-gradient(90deg, rgba(255, 151, 12, 0) 0%, #ffb026 35%, #fff0b0 50%, #ff980c 65%, rgba(255, 151, 12, 0) 100%),
+  flare-ice: linear-gradient(90deg, rgba(58, 145, 208, 0) 0%, #59b7ff 36%, #f0faff 50%, #5cb9ff 66%, rgba(58, 145, 208, 0) 100%),
+
+  // Icone raster bianche (parti, weight/dash/burst): in light vanno scurite.
+  mono-asset-filter: none,
+);
+
+// Light: le card diventano bianche con tinta blu; header e bottone primario
+// restano brand (scuri) con foreground dedicato, come da guida _colors.scss.
+$_light: map.merge(
+  $_dark,
+  (
+    card-surface: linear-gradient(135deg, #ffffff 0%, #f4f8fd 55%, #e5f1ff 100%),
+    card-surface-raised: linear-gradient(160deg, #ffffff 0%, #edf3fb 54%, #e5f1ff 100%),
+    card-border: rgba(23, 44, 84, 0.18),
+    card-shadow: 0 4px 16px rgba(16, 30, 49, 0.08),
+    card-bevel: inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    card-shine: linear-gradient(90deg, rgba(43, 105, 236, 0) 0%, rgba(43, 105, 236, 0.05) 50%, rgba(43, 105, 236, 0) 100%),
+    glow-blue: 0 0 8px rgba(43, 105, 236, 0.18),
+    glow-success: 0 0 8px rgba(21, 128, 61, 0.2),
+    glow-error: 0 4px 10px rgba(217, 58, 80, 0.25),
+    mono-asset-filter: brightness(0.25),
+  )
+);
+
+$beyx-themes: (
+  dark: $_dark,
+  light: $_light,
+);
+
+@mixin beyx-custom-properties($theme: dark) {
+  @each $name, $value in map.get($beyx-themes, $theme) {
+    --beyx-#{$name}: #{$value};
+  }
+}
+
+// Testi compatti delle card BeyX (10–13px in Figma, sotto la scala _fonts).
+// px → rem per rispettare lo zoom utente.
+@mixin beyx-text($size: 10px, $weight: 700, $line-height: normal) {
+  font-family: f.$font-ui;
+  font-size: math.div($size, f.$typography-reference-root) * 1rem;
+  font-weight: $weight;
+  line-height: $line-height;
+  letter-spacing: 0;
+}
+
+// Riflesso diagonale delle card (componente Figma "Deco/Card Shine").
+// Il contenitore deve creare uno stacking context (`isolation: isolate`):
+// il riflesso sta sopra lo sfondo ma sotto il contenuto.
+@mixin card-shine {
+  &::before,
+  &::after {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    content: "";
+    background: var(--beyx-card-shine);
+    border-radius: inherit;
+  }
+
+  &::before {
+    clip-path: polygon(58% 0, 84% 0, 34% 100%, 8% 100%);
+  }
+
+  &::after {
+    opacity: 0.6;
+    clip-path: polygon(88% 0, 94% 0, 44% 100%, 38% 100%);
+  }
+}
+
+// Superficie card BeyX (BeyX/Card/Surface + Border + Bevel + Shine).
+// $surface: card | raised · varianti di stato con card-selected / card-invalid.
+@mixin card($surface: card, $radius: 8px) {
+  position: relative;
+  isolation: isolate;
+  background: var(--beyx-card-surface);
+  border: 1px solid var(--beyx-card-border);
+  border-radius: $radius;
+  box-shadow: var(--beyx-card-shadow), var(--beyx-card-bevel);
+
+  @if $surface == raised {
+    background: var(--beyx-card-surface-raised);
+  }
+
+  @include card-shine;
+}
+
+// BeyX/Glow/Success
+@mixin card-selected {
+  border-color: var(--status-success-base);
+  box-shadow: var(--beyx-glow-success);
+}
+
+@mixin card-invalid {
+  border-color: var(--status-error-base);
+}
+
+// Campo/barra opaca (DropDown, SearchBar, Slider Selector).
+@mixin field($border: var(--border-decorative)) {
+  background: var(--raised);
+  border: 1px solid $border;
+}
+
+// Reset per <button> usati come superficie.
+@mixin button-reset {
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}

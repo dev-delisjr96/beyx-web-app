@@ -1,0 +1,16 @@
+.line {
+  display: block;
+  inline-size: 100%;
+  block-size: 2px;
+  pointer-events: none;
+}
+
+.orange {
+  background: var(--beyx-flare-orange);
+  box-shadow: var(--beyx-glow-orange);
+}
+
+.ice {
+  background: var(--beyx-flare-ice);
+  box-shadow: var(--beyx-glow-blue);
+}

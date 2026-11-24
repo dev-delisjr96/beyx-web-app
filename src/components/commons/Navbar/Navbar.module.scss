@@ -1,0 +1,42 @@
+// BeyX/Surface/Header + BeyX/Header/Shadow
+.navbar {
+  position: relative;
+  z-index: 1;
+  inline-size: 100%;
+  overflow: hidden;
+  color: var(--beyx-header-foreground);
+  background: var(--beyx-header-surface);
+  box-shadow: var(--beyx-header-shadow);
+}
+
+.bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  block-size: 60px;
+  padding: 0 15px;
+}
+
+.icon {
+  color: var(--beyx-header-icon);
+
+  &[aria-expanded="true"] {
+    color: var(--beyx-header-icon-active);
+  }
+}
+
+.logo {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  inline-size: 59px;
+  block-size: 60px;
+  translate: -50% 0;
+}
+
+.flare {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}

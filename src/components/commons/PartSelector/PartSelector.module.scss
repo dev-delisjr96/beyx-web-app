@@ -1,0 +1,42 @@
+@use "../../../styles/beyx" as b;
+@use "../../../styles/colors" as c;
+
+.selector {
+  @include b.button-reset;
+  @include b.card(raised, 4px);
+
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  inline-size: 100%;
+  block-size: 44px;
+  padding: 0 4px 0 1px;
+  overflow: hidden;
+
+  &:focus-visible {
+    @include c.focus-visible-ring;
+  }
+}
+
+.selected {
+  @include b.card-selected;
+}
+
+.icon {
+  flex-shrink: 0;
+  inline-size: 30px;
+  block-size: 30px;
+  object-fit: contain;
+  filter: var(--beyx-mono-asset-filter);
+}
+
+.texts {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.chevron {
+  color: var(--text-muted);
+}

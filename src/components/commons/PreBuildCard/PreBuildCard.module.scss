@@ -1,0 +1,48 @@
+.card {
+  position: relative;
+  display: grid;
+  grid-template-areas:
+    "title stats"
+    "image stats"
+    "parts parts";
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr auto;
+  column-gap: 6px;
+  inline-size: 130px;
+  block-size: 100px;
+  padding: 4px 9px 5px 5px;
+  background: var(--surface);
+  border: 0.5px solid var(--border-decorative);
+  border-radius: 8px;
+}
+
+.title {
+  grid-area: title;
+}
+
+.image {
+  display: grid;
+  grid-area: image;
+  place-items: center;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  grid-area: stats;
+  gap: 4px;
+  justify-content: center;
+  padding-top: 10px;
+}
+
+.parts {
+  display: flex;
+  grid-area: parts;
+  gap: 12px;
+  align-items: center;
+}
+
+.badge {
+  top: -11.5px;
+  right: -12.5px;
+}

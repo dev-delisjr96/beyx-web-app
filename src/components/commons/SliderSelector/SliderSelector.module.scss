@@ -1,0 +1,33 @@
+@use "../../../styles/beyx" as b;
+
+.slider {
+  @include b.field;
+
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  inline-size: 100%;
+  padding: 0 14px;
+}
+
+.md {
+  block-size: 44px;
+}
+
+.sm {
+  block-size: 36px;
+  padding: 0 10px;
+}
+
+.value {
+  flex: 1;
+}
+
+.arrow,
+.previous {
+  color: var(--text-primary);
+}
+
+.previous {
+  scale: -1 1;
+}

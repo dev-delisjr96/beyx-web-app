@@ -1,0 +1,43 @@
+@use "../../../styles/beyx" as b;
+@use "../../../styles/colors" as c;
+
+.searchBar {
+  @include b.field(var(--status-info-border-soft));
+
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  inline-size: 100%;
+  block-size: 36px;
+  padding: 0 8px;
+  cursor: text;
+
+  &:focus-within {
+    @include c.focus-visible-ring;
+  }
+}
+
+.icon {
+  color: var(--text-secondary);
+}
+
+.input {
+  @include b.beyx-text(10px, 700);
+
+  flex: 1;
+  min-inline-size: 0;
+  padding: 0;
+  color: var(--text-primary);
+  background: none;
+  border: 0;
+  outline: none;
+
+  &::placeholder {
+    color: var(--text-tertiary);
+    opacity: 1;
+  }
+
+  &::-webkit-search-cancel-button {
+    appearance: none;
+  }
+}
