@@ -216,6 +216,16 @@ $type-tracking: (
   }
 }
 
+// Compact UI text for dense components (cards, chips, compact fields): sizes
+// below the semantic scale (10–13px in Figma). px → rem to respect user zoom.
+@mixin compact-text($size: 10px, $weight: 700, $line-height: normal) {
+  font-family: $font-ui;
+  font-size: _to-rem($size);
+  font-weight: $weight;
+  line-height: $line-height;
+  letter-spacing: 0;
+}
+
 @mixin numeric-tabular {
   font-variant-numeric: tabular-nums lining-nums;
 }

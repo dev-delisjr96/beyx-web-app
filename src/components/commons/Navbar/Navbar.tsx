@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import type { ButtonHTMLAttributes } from "react";
+import { useState} from 'react'
 
 import { LOGO } from "../../../assets";
 import FlareLine from "../FlareLine/FlareLine";
@@ -25,7 +26,11 @@ type NavbarProps = {
 };
 
 // Figma: Navbar (Default · expanded)
-const Navbar = ({ expanded = false, items = [], menuButtonProps, profileButtonProps, className }: NavbarProps) => (
+const Navbar = ({ expanded = false, items = [], menuButtonProps, profileButtonProps, className }: NavbarProps) => {
+  
+  const [ isExpanded, setIsExpanded ] = useState(expanded);
+  
+  return (
   <header className={clsx(styles.navbar, className)}>
     <div className={styles.bar}>
       <IconButton
@@ -35,20 +40,18 @@ const Navbar = ({ expanded = false, items = [], menuButtonProps, profileButtonPr
         aria-expanded={expanded}
         className={styles.icon}
         {...menuButtonProps}
+        onClick={() => { setIsExpanded(!isExpanded)}}
       />
       <img className={styles.logo} src={LOGO} alt="BeyX" />
       <IconButton icon="person" label="Profile" className={styles.icon} {...profileButtonProps} />
       <FlareLine className={styles.flare} />
     </div>
-
-    {expanded && items.length > 0 && (
-      <nav>
+      <nav className={clsx(styles.menu, isExpanded && styles.expanded)}>
         {items.map(({ label, active, buttonProps }) => (
           <NavMenuItem key={label} label={label} active={active} {...buttonProps} />
         ))}
       </nav>
-    )}
   </header>
-);
+)};
 
 export default Navbar;

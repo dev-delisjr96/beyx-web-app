@@ -1,12 +1,11 @@
-// BeyX/Surface/Header + BeyX/Header/Shadow
+// Surface/Header + Header/Shadow
 .navbar {
   position: relative;
   z-index: 1;
   inline-size: 100%;
-  overflow: hidden;
-  color: var(--beyx-header-foreground);
-  background: var(--beyx-header-surface);
-  box-shadow: var(--beyx-header-shadow);
+  color: var(--header-foreground);
+  background: var(--header-surface);
+  box-shadow: var(--header-shadow);
 }
 
 .bar {
@@ -19,10 +18,10 @@
 }
 
 .icon {
-  color: var(--beyx-header-icon);
+  color: var(--header-icon);
 
   &[aria-expanded="true"] {
-    color: var(--beyx-header-icon-active);
+    color: var(--header-icon-active);
   }
 }
 
@@ -37,6 +36,16 @@
 
 .flare {
   position: absolute;
-  bottom: 0;
+  bottom: -3px;
   left: 0;
+}
+
+.menu{
+  max-height: 0px;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+
+  &.expanded{
+    max-height: 500px; // Adjust this value based on your menu content
+  }
 }

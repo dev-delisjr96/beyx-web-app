@@ -1,0 +1,20 @@
+// Effetti globali: `@use "<path>/styles/effects" as fx;`
+//   fx.glass-card(), fx.glow(orange), fx.flare-line(ice), fx.shine …
+
+@forward "glass";
+@forward "glow";
+@forward "flare";
+@forward "shine";
+
+@use "glass";
+@use "glow";
+@use "flare";
+@use "shine";
+
+// Proietta le custom properties di tutti gli effetti per il tema dato.
+@mixin effects-custom-properties($theme: dark) {
+  @include glass.glass-custom-properties($theme);
+  @include glow.glow-custom-properties($theme);
+  @include flare.flare-custom-properties($theme);
+  @include shine.shine-custom-properties($theme);
+}

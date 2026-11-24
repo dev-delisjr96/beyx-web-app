@@ -1,4 +1,4 @@
-@use "../../../styles/beyx" as b;
+@use "../../../styles/fonts" as f;
 
 .badge {
   position: absolute;
@@ -20,7 +20,7 @@
   border: 1px solid var(--status-error-base);
   border-radius: 50%;
 
-  @include b.beyx-text(16px, 700);
+  @include f.compact-text(16px, 700);
 }
 
 .placeholder {

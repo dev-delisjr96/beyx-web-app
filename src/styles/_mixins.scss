@@ -1,0 +1,21 @@
+// =============================================================================
+// MIXINS — utility generiche, non legate a un tema o a un componente.
+// =============================================================================
+
+// Reset per <button> usati come superficie.
+@mixin button-reset {
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+// Campo/barra opaca (dropdown, search bar, slider selector).
+@mixin field($border: var(--border-decorative)) {
+  background: var(--raised);
+  border: 1px solid $border;
+}

@@ -1,9 +1,10 @@
-@use "../../../styles/beyx" as b;
 @use "../../../styles/colors" as c;
+@use "../../../styles/effects" as fx;
 @use "../../../styles/fonts" as f;
+@use "../../../styles/mixins" as m;
 
 .button {
-  @include b.button-reset;
+  @include m.button-reset;
   @include f.type-style(button);
 
   display: inline-flex;
@@ -36,18 +37,18 @@
   min-inline-size: 0;
 }
 
-// BeyX/Button/Primary + BeyX/Card/Border + BeyX/Glow/Blue
+// Button/Primary (gradiente brand) + Card/Border + Glow/Blue
 .primary {
-  color: var(--beyx-button-primary-foreground);
-  background: var(--beyx-button-primary);
-  border: 1px solid var(--beyx-card-border);
-  box-shadow: var(--beyx-glow-blue);
+  color: var(--action-primary-gradient-foreground);
+  background: var(--action-primary-gradient);
+  border: 1px solid var(--card-border);
+  @include fx.glow(blue);
 
-  // "Primary/Hover/Clicked": BeyX/Card/Border Orange + BeyX/Glow/Orange
+  // "Primary/Hover/Clicked": Card/Border accent + Glow/Orange
   &:hover:not(:disabled),
   &:active:not(:disabled) {
-    border-color: var(--beyx-card-border-orange);
-    box-shadow: var(--beyx-glow-orange);
+    border-color: var(--card-border-accent);
+    @include fx.glow(orange);
   }
 }
 
@@ -68,7 +69,7 @@
   color: var(--status-error-on-solid);
   background: var(--status-error-solid);
   border-color: var(--status-error-border);
-  box-shadow: var(--beyx-glow-error);
+  @include fx.glow(error);
 
   &:hover:not(:disabled),
   &:active:not(:disabled) {

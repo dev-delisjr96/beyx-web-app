@@ -1,0 +1,87 @@
+// =============================================================================
+// SURFACES — superfici composte (card, header) con token per tema.
+// Fonte: Figma `Card/*`, `Surface/Header`, `Header/*`.
+//
+// Modulo "puro": emette CSS solo tramite i mixin.
+//   • `surface-custom-properties(dark|light)` → --card-* e --header-*
+//   • `card($surface, $radius)`               → card con bordo, bevel e shine
+//   • `card-selected` / `card-invalid`        → stati della card
+// =============================================================================
+
+@use "sass:map";
+@use "effects/shine" as shine;
+@use "effects/glow" as glow;
+
+$_dark: (
+  // Card/Surface · Card/Surface Raised
+  card-surface: linear-gradient(135deg, #163d60 0%, #0c2944 45%, #061623 100%),
+  card-surface-raised: linear-gradient(160deg, #0d2440 0%, #16456b 54%, #08182b 100%),
+  // Card/Border (versione piatta del gradiente, per `border-color`)
+  card-border: rgba(190, 233, 255, 0.55),
+  // Card/Border Orange — bordo accent (hover/pressed)
+  card-border-accent: rgba(255, 176, 38, 0.8),
+  // Card/Bevel
+  card-shadow: 0 4px 10px rgba(0, 0, 0, 0.3),
+  card-bevel: inset 0 1px 0 rgba(190, 233, 255, 0.1),
+
+  // Surface/Header · Header/Shadow
+  header-surface: linear-gradient(180deg, #0d2440 0%, #061623 100%),
+  header-shadow: 0 2px 12px rgba(0, 0, 0, 0.35),
+  header-foreground: #f5f9ff,
+  header-icon: #e5f1ff,
+  header-icon-active: #6cabff,
+  header-item-active: #234973,
+  header-item-border: #e5f1ff,
+);
+
+// Light: le card diventano bianche con tinta blu; l'header resta brand (scuro)
+// con foreground dedicato, come da guida _colors.scss.
+$_light: map.merge(
+  $_dark,
+  (
+    card-surface: linear-gradient(135deg, #ffffff 0%, #f4f8fd 55%, #e5f1ff 100%),
+    card-surface-raised: linear-gradient(160deg, #ffffff 0%, #edf3fb 54%, #e5f1ff 100%),
+    card-border: rgba(23, 44, 84, 0.18),
+    card-shadow: 0 4px 16px rgba(16, 30, 49, 0.08),
+    card-bevel: inset 0 1px 0 rgba(255, 255, 255, 0.9),
+  )
+);
+
+$surface-themes: (
+  dark: $_dark,
+  light: $_light,
+);
+
+@mixin surface-custom-properties($theme: dark) {
+  @each $name, $value in map.get($surface-themes, $theme) {
+    --#{$name}: #{$value};
+  }
+}
+
+// Card (Card/Surface + Border + Bevel + Shine).
+// $surface: card | raised · varianti di stato con card-selected / card-invalid.
+@mixin card($surface: card, $radius: 8px) {
+  position: relative;
+  isolation: isolate;
+  background: var(--card-surface);
+  border: 1px solid var(--card-border);
+  border-radius: $radius;
+  box-shadow: var(--card-shadow), var(--card-bevel);
+
+  @if $surface == raised {
+    background: var(--card-surface-raised);
+  }
+
+  @include shine.shine;
+}
+
+// Glow/Success
+@mixin card-selected {
+  border-color: var(--status-success-base);
+
+  @include glow.glow(success);
+}
+
+@mixin card-invalid {
+  border-color: var(--status-error-base);
+}

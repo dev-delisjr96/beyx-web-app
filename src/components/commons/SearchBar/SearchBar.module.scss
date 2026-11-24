@@ -1,8 +1,9 @@
-@use "../../../styles/beyx" as b;
 @use "../../../styles/colors" as c;
+@use "../../../styles/fonts" as f;
+@use "../../../styles/mixins" as m;
 
 .searchBar {
-  @include b.field(var(--status-info-border-soft));
+  @include m.field(var(--status-info-border-soft));
 
   display: flex;
   gap: 10px;
@@ -22,7 +23,7 @@
 }
 
 .input {
-  @include b.beyx-text(10px, 700);
+  @include f.compact-text(10px, 700);
 
   flex: 1;
   min-inline-size: 0;

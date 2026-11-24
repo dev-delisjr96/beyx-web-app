@@ -1,9 +1,10 @@
-@use "../../../styles/beyx" as b;
 @use "../../../styles/colors" as c;
+@use "../../../styles/mixins" as m;
+@use "../../../styles/surfaces" as s;
 
 .selector {
-  @include b.button-reset;
-  @include b.card(raised, 4px);
+  @include m.button-reset;
+  @include s.card(raised, 4px);
 
   display: flex;
   gap: 3px;
@@ -19,7 +20,7 @@
 }
 
 .selected {
-  @include b.card-selected;
+  @include s.card-selected;
 }
 
 .icon {
@@ -27,7 +28,7 @@
   inline-size: 30px;
   block-size: 30px;
   object-fit: contain;
-  filter: var(--beyx-mono-asset-filter);
+  filter: var(--asset-mono-filter);
 }
 
 .texts {

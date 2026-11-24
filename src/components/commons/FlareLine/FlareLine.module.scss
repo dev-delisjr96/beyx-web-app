@@ -1,16 +1,10 @@
-.line {
-  display: block;
-  inline-size: 100%;
-  block-size: 2px;
-  pointer-events: none;
-}
+@use "../../../styles/effects" as fx;
 
-.orange {
-  background: var(--beyx-flare-orange);
-  box-shadow: var(--beyx-glow-orange);
+// Default: orange. `styles.orange` resta indefinita (clsx la ignora).
+.line {
+  @include fx.flare-line(orange);
 }
 
 .ice {
-  background: var(--beyx-flare-ice);
-  box-shadow: var(--beyx-glow-blue);
+  @include fx.flare-line(ice);
 }

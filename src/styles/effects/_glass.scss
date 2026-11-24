@@ -1,0 +1,140 @@
+// =============================================================================
+// EFFECT — GLASS (glassmorphism)
+// Tinta vetro (foundation glass-tint) a diverse opacità + mixin card glass.
+//
+// Modulo "puro": emette CSS solo tramite i mixin.
+//   • `glass-custom-properties(dark|light)` → --glass-subtle/default/elevated
+//   • `glass-card($level, $readable)`        → card glass dark (statico)
+//   • `glass-card-light($level, $readable)`  → card glass light (statico)
+// =============================================================================
+
+@use "sass:color";
+@use "sass:map";
+@use "../colors" as c;
+
+@function _alpha($color, $alpha) {
+  @return color.change($color, $alpha: $alpha);
+}
+
+// -----------------------------------------------------------------------------
+// Dark — glass-tint #234973 a diverse opacità
+// -----------------------------------------------------------------------------
+$_tint: map.get(c.$foundation, glass-tint);
+
+$glass: (
+  // glass-subtle — rgba(35,73,115,0.12)
+  // • Glass leggero per elementi annidati. Es: item di una lista dentro un pannello glass
+  // • Hover leggero di elementi ghost. Es: bottone icona in hover
+  subtle: _alpha($_tint, 0.12),
+  // glass-default — rgba(35,73,115,0.23)
+  // • Superficie glass decorativa. Per card con testo il mixin glass-card usa backing opaco.
+  // • Navbar trasparente sticky con blur. Es: header sopra il contenuto in scroll
+  default: _alpha($_tint, 0.23),
+  // glass-elevated — rgba(35,73,115,0.34)
+  // • Livelli decorativi sopra altri glass; modali e popover con testo usano backing opaco.
+  // • Card in hover o selezionata. Es: card deck quando la si seleziona
+  elevated: _alpha($_tint, 0.34),
+);
+
+// -----------------------------------------------------------------------------
+// Light — bianco semi-trasparente sopra il fondo tinto
+// Da solo il vetro bianco non stacca dal fondo chiaro: se contiene testo,
+// glass-card-light() usa un backing opaco e bordo decorative + ombra.
+// -----------------------------------------------------------------------------
+$_tint-light: map.get(c.$light-foundation, glass-tint);
+
+$light-glass: (
+  subtle: _alpha($_tint-light, 0.45),
+  default: _alpha($_tint-light, 0.65),
+  elevated: _alpha($_tint-light, 0.82),
+);
+
+// Riflesso "luce" sul bordo superiore dei glass in light.
+$light-glass-reflection: _alpha(#ffffff, 0.9);
+
+$glass-themes: (
+  dark: $glass,
+  light: $light-glass,
+);
+
+@function _glass-map($theme) {
+  @if not map.has-key($glass-themes, $theme) {
+    @error "[glass] tema `#{$theme}` sconosciuto.";
+  }
+
+  @return map.get($glass-themes, $theme);
+}
+
+@function glass($key, $theme: dark) {
+  $map: _glass-map($theme);
+
+  @if not map.has-key($map, $key) {
+    @error "[glass] livello `#{$key}` sconosciuto. Disponibili: #{map.keys($map)}";
+  }
+
+  @return map.get($map, $key);
+}
+
+@mixin glass-custom-properties($theme: dark) {
+  @each $name, $value in _glass-map($theme) {
+    --glass-#{$name}: #{$value};
+  }
+}
+
+// Glass card: per default ha un backing OPACO con tinta vetro simulata,
+// così il testo non dipende dai pixel della pagina dietro al blur.
+// Passare $readable: false SOLO per livelli decorativi senza testo/controlli.
+// `border(decorative)` non identifica un input e non necessita di 3:1.
+@mixin glass-card($level: default, $readable: true) {
+  @if $readable {
+    background: color.mix(
+      map.get(c.$foundation, glass-tint),
+      map.get(c.$foundation, raised),
+      color.alpha(glass($level)) * 100%
+    );
+  } @else {
+    background: glass($level);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+  }
+
+  border: 1px solid c.border-color(decorative);
+  border-radius: 20px;
+
+  @media (width <= 768px) {
+    border-radius: 16px;
+    @if not $readable {
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+  }
+}
+
+// Glass Light: con contenuto leggibile usa base solida colorata
+// e conserva profondità tramite bordo + ombra, non tramite trasparenza.
+@mixin glass-card-light($level: default, $readable: true) {
+  @if $readable {
+    background: color.mix(
+      map.get(c.$light-foundation, surface),
+      map.get(c.$light-foundation, deep),
+      color.alpha(glass($level, light)) * 100%
+    );
+  } @else {
+    background: glass($level, light);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    backdrop-filter: blur(20px) saturate(140%);
+  }
+
+  border: 1px solid c.border-color-light(decorative);
+  border-top-color: $light-glass-reflection;
+  border-radius: 20px;
+  box-shadow: c.shadow-light(md);
+
+  @media (width <= 768px) {
+    border-radius: 16px;
+    @if not $readable {
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
+      backdrop-filter: blur(12px) saturate(140%);
+    }
+  }
+}

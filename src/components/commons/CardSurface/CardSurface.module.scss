@@ -1,11 +1,11 @@
-@use "../../../styles/beyx" as b;
+@use "../../../styles/surfaces" as s;
 
 .card {
-  @include b.card;
+  @include s.card;
 }
 
 .raised {
-  background: var(--beyx-card-surface-raised);
+  background: var(--card-surface-raised);
 }
 
 .radius-sm {
@@ -17,9 +17,9 @@
 }
 
 .selected {
-  @include b.card-selected;
+  @include s.card-selected;
 }
 
 .invalid {
-  @include b.card-invalid;
+  @include s.card-invalid;
 }

@@ -1,21 +1,26 @@
-// Stili globali: proietta i token di _colors.scss e _beyx.scss come CSS custom
+// Stili globali: proietta i token (colori, superfici, effetti) come CSS custom
 // properties. Il tema attivo è scelto da `data-theme` su <html> (ThemeProvider).
 
 @use "colors" as c;
-@use "beyx" as b;
+@use "surfaces" as s;
+@use "effects" as fx;
 @use "fonts" as f;
+
+@mixin _theme($theme) {
+  @include c.color-custom-properties($theme);
+  @include s.surface-custom-properties($theme);
+  @include fx.effects-custom-properties($theme);
+}
 
 :root,
 [data-theme="dark"] {
-  @include c.color-custom-properties(dark);
-  @include b.beyx-custom-properties(dark);
+  @include _theme(dark);
 
   color-scheme: dark;
 }
 
 [data-theme="light"] {
-  @include c.color-custom-properties(light);
-  @include b.beyx-custom-properties(light);
+  @include _theme(light);
 
   color-scheme: light;
 }

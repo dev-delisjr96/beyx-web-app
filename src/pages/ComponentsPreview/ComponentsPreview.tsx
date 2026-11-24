@@ -19,7 +19,7 @@ import useResponsive from "../../hooks/useResponsive";
 import useTheme from "../../theme/useTheme";
 import styles from "./ComponentsPreview.module.scss";
 
-const NAV_ITEMS = [{ label: "Deck builder", active: true }, { label: "Tournament" }];
+const NAV_ITEMS = [{ label: "Deck builder", active: false }, { label: "Tournament" }];
 
 // Vetrina temporanea dei componenti (mobile-first, 320px come in Figma).
 // Da rimuovere/sostituire quando arriveranno le pagine reali.
@@ -37,11 +37,7 @@ const ComponentsPreview = () => {
       </div>
 
       <div className={styles.frame}>
-        <Navbar />
-
-        <Section title="Navbar · expanded">
-          <Navbar expanded items={NAV_ITEMS} />
-        </Section>
+        <Navbar items={NAV_ITEMS}/>
 
         <Section title="DropDown">
           <DropDown value="Standard Rules" />

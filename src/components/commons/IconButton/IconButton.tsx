@@ -23,7 +23,7 @@ const IconButton = ({ icon, label, size = 24, active = false, type = "button", c
     className={clsx(styles.button, active && styles.active, className)}
     {...rest}
   >
-    <Icon name={icon} size={size} />
+    <Icon name={icon} size={size} className={styles.icon} />
   </button>
 );
 

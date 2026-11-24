@@ -8,15 +8,15 @@
 // I commenti di ogni token riportano le note d'uso lasciate in Figma.
 //
 // Modulo "puro": solo variabili, funzioni e mixin, non emette CSS finché non
-// includi `color-custom-properties()`, `glass-card*()` o il mixin focus. Si può quindi
+// includi `color-custom-properties()` o il mixin focus. Si può quindi
 // `@use`-are da ogni *.module.scss senza duplicare output.
+// Gli effetti (glass, glow, flare, shine) stanno in `effects/`, le superfici
+// composte (card, header) in `_surfaces.scss`.
 //
 // Revisione WCAG 2.2 AA (con attenzione anche al focus AAA):
 // • le varianti ALPHA rimangono per DECORAZIONE e status background;
 // • border di input/stati e i bordi interattivi hanno contrasto >= 3:1;
-// • ogni pulsante pieno usa il suo token solid + on-solid (>=4.5:1);
-// • i mixin glass-card* sono opachi DI DEFAULT quando contengono testo,
-//   perché una superficie traslucida sopra immagini/gradienti non è certificabile.
+// • ogni pulsante pieno usa il suo token solid + on-solid (>=4.5:1).
 // I token primitivi sono colori, NON combinazioni valide universalmente:
 // rispettare sempre gli usi commentati e verificare le coppie reali.
 // =============================================================================
@@ -268,23 +268,22 @@ $status: (
 );
 
 // -----------------------------------------------------------------------------
-// Glassmorphism — glass-tint a diverse opacità
+// Brand — palette identitaria (Figma `brand/*`), identica in dark e light.
+// Usata da superfici ed effetti (bordi accent, flare, glow); non per testo.
 // -----------------------------------------------------------------------------
-$_glass-tint: map.get($foundation, glass-tint);
-
-$glass: (
-  // glass-subtle — rgba(35,73,115,0.12)
-  // • Glass leggero per elementi annidati. Es: item di una lista dentro un pannello glass
-  // • Hover leggero di elementi ghost. Es: bottone icona in hover
-  subtle: _alpha($_glass-tint, 0.12),
-  // glass-default — rgba(35,73,115,0.23)
-  // • Superficie glass decorativa. Per card con testo il mixin glass-card usa backing opaco.
-  // • Navbar trasparente sticky con blur. Es: header sopra il contenuto in scroll
-  default: _alpha($_glass-tint, 0.23),
-  // glass-elevated — rgba(35,73,115,0.34)
-  // • Livelli decorativi sopra altri glass; modali e popover con testo usano backing opaco.
-  // • Card in hover o selezionata. Es: card deck quando la si seleziona
-  elevated: _alpha($_glass-tint, 0.34),
+$brand: (
+  // orange — #FF970C · accento caldo, glow e flare
+  orange: #ff970c,
+  // orange-glow — #FFB026 · bordo accent in hover/pressed
+  orange-glow: #ffb026,
+  // ice — #E1F4FF · riflessi freddi
+  ice: #e1f4ff,
+  // cyan — #65C8FF · riflessi/shine
+  cyan: #65c8ff,
+  // blue — #3A91D0 · glow blu
+  blue: #3a91d0,
+  // navy — #0A2037 · fondi brand scuri
+  navy: #0a2037,
 );
 
 // -----------------------------------------------------------------------------
@@ -349,12 +348,16 @@ $accent-on: (
 // Semantic Action — foreground/background/hover/pressed, validi con 14px text.
 // Non codificare direttamente "blue-500" nei componenti; usa action.
 // -----------------------------------------------------------------------------
+// gradient / gradient-foreground — variante "brand" del primario (Figma
+// "Button/Primary"): gradiente scuro con testo chiaro, uguale nei due temi.
 $action: (
   primary: (
     background: map.get($blue, 500),
     foreground: #ffffff,
     hover: map.get($blue, 600),
-    pressed: map.get($blue, 700)
+    pressed: map.get($blue, 700),
+    gradient: linear-gradient(180deg, #1c5480 0%, #173f62 15%, #071a2e 100%),
+    gradient-foreground: #f5f9ff
   )
 );
 
@@ -373,6 +376,10 @@ $focus-contrast: #060a10;
 // • Backdrop dietro le modali. Es: modale "Elimina deck?"
 // • Scrim di drawer e menu mobile. Es: menu hamburger aperto
 $overlay: _alpha(#02060c, 0.72);
+
+// asset-mono-filter — filtro per icone raster bianche (parti, stat).
+// In dark restano bianche; in light vanno scurite.
+$asset-mono-filter: none;
 
 // =============================================================================
 // LIGHT
@@ -478,21 +485,6 @@ $light-status: (
 );
 
 // -----------------------------------------------------------------------------
-// Glassmorphism — bianco semi-trasparente sopra il fondo tinto
-//
-// Light: da solo il vetro bianco non stacca dal fondo chiaro
-// • Se contiene testo, glass-card-light() usa un backing opaco e bordo decorative + ombra.
-// • Es: card anteprima deck → usa il mixin glass-card-light, non solo il background
-// -----------------------------------------------------------------------------
-$_glass-tint-light: map.get($light-foundation, glass-tint);
-
-$light-glass: (
-  subtle: _alpha($_glass-tint-light, 0.45),
-  default: _alpha($_glass-tint-light, 0.65),
-  elevated: _alpha($_glass-tint-light, 0.82),
-);
-
-// -----------------------------------------------------------------------------
 // Borders Light
 // • subtle/decorative per card/separatori (non devono identificare controlli).
 // • default per campi input/bottoni outline: >=3:1 sulle superfici light.
@@ -505,9 +497,6 @@ $light-border: (
   default: _alpha(map.get($blue, 900), 0.55),
   highlight: _alpha(map.get($blue, 600), 0.75),
 );
-
-// Riflesso "luce" sul bordo superiore dei glass in light.
-$light-glass-reflection: _alpha(#ffffff, 0.9);
 
 // -----------------------------------------------------------------------------
 // Accents light — tutte le tonalità sono leggibili anche come testo normale
@@ -542,18 +531,15 @@ $light-focus: map.get($blue, 600);
 $light-focus-contrast: #ffffff;
 
 // La stessa CTA primary è valida in light e dark; il ruolo resta semantico.
-$light-action: (
-  primary: (
-    background: map.get($blue, 500),
-    foreground: #ffffff,
-    hover: map.get($blue, 600),
-    pressed: map.get($blue, 700)
-  )
-);
+// Il gradiente brand resta scuro anche in light (con foreground chiaro).
+$light-action: $action;
 
 // overlay — #080D14 · 40%: backdrop sempre scuro ma più leggero,
 // la pagina chiara resta intuibile
 $light-overlay: _alpha(map.get($foundation, base), 0.4);
+
+// Icone raster bianche scurite per restare leggibili sul chiaro.
+$light-asset-mono-filter: brightness(0.25);
 
 // Ombre — non sono swatch in Figma ma sono richiamate dalle note ("shadow-light md").
 // In dark la profondità la danno i colori, in light servono le ombre.
@@ -574,28 +560,30 @@ $themes: (
     blue: $blue,
     text: $text,
     status: $status,
-    glass: $glass,
     border: $border,
     accent: $accent,
     accent-on: $accent-on,
+    brand: $brand,
     action: $action,
     focus: $focus,
     focus-contrast: $focus-contrast,
     overlay: $overlay,
+    asset-mono-filter: $asset-mono-filter,
   ),
   light: (
     foundation: $light-foundation,
     blue: $light-blue,
     text: $light-text,
     status: $light-status,
-    glass: $light-glass,
     border: $light-border,
     accent: $light-accent,
     accent-on: $light-accent-on,
+    brand: $brand,
     action: $light-action,
     focus: $light-focus,
     focus-contrast: $light-focus-contrast,
     overlay: $light-overlay,
+    asset-mono-filter: $light-asset-mono-filter,
   ),
 );
 
@@ -639,8 +627,8 @@ $themes: (
   @return theme-color(status, $name, $variant);
 }
 
-@function glass($key) {
-  @return theme-color(glass, $key);
+@function brand($key) {
+  @return theme-color(brand, $key);
 }
 
 @function border-color($key) {
@@ -670,10 +658,6 @@ $themes: (
 
 @function status-light($name, $variant: base) {
   @return theme-color(status, $name, $variant, $theme: light);
-}
-
-@function glass-light($key) {
-  @return theme-color(glass, $key, $theme: light);
 }
 
 @function border-color-light($key) {
@@ -720,10 +704,6 @@ $themes: (
     }
   }
 
-  @each $name, $value in map.get($t, glass) {
-    --glass-#{$name}: #{$value};
-  }
-
   @each $name, $value in map.get($t, border) {
     --border-#{$name}: #{$value};
   }
@@ -736,6 +716,10 @@ $themes: (
     --accent-#{_ident($name)}-foreground: #{$value};
   }
 
+  @each $name, $value in map.get($t, brand) {
+    --brand-#{_ident($name)}: #{$value};
+  }
+
   @each $name, $variants in map.get($t, action) {
     @each $variant, $value in $variants {
       --action-#{$name}-#{$variant}: #{$value};
@@ -745,64 +729,7 @@ $themes: (
   --focus-ring: #{map.get($t, focus)};
   --focus-ring-contrast: #{map.get($t, focus-contrast)};
   --overlay-scrim: #{map.get($t, overlay)};
-}
-
-// Glass card: per default ha un backing OPACO con tinta vetro simulata,
-// così il testo non dipende dai pixel della pagina dietro al blur.
-// Passare $readable: false SOLO per livelli decorativi senza testo/controlli.
-// `border(decorative)` non identifica un input e non necessita di 3:1.
-@mixin glass-card($level: default, $readable: true) {
-  @if $readable {
-    background: color.mix(
-      map.get($foundation, glass-tint),
-      map.get($foundation, raised),
-      color.alpha(glass($level)) * 100%
-    );
-  } @else {
-    background: glass($level);
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-  }
-
-  border: 1px solid border-color(decorative);
-  border-radius: 20px;
-
-  @media (width <= 768px) {
-    border-radius: 16px;
-    @if not $readable {
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
-    }
-  }
-}
-
-// Glass Light: con contenuto leggibile usa base solida colorata
-// e conserva profondità tramite bordo + ombra, non tramite trasparenza.
-@mixin glass-card-light($level: default, $readable: true) {
-  @if $readable {
-    background: color.mix(
-      map.get($light-foundation, surface),
-      map.get($light-foundation, deep),
-      color.alpha(glass-light($level)) * 100%
-    );
-  } @else {
-    background: glass-light($level);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
-    backdrop-filter: blur(20px) saturate(140%);
-  }
-
-  border: 1px solid border-color-light(decorative);
-  border-top-color: $light-glass-reflection;
-  border-radius: 20px;
-  box-shadow: shadow-light(md);
-
-  @media (width <= 768px) {
-    border-radius: 16px;
-    @if not $readable {
-      -webkit-backdrop-filter: blur(12px) saturate(140%);
-      backdrop-filter: blur(12px) saturate(140%);
-    }
-  }
+  --asset-mono-filter: #{map.get($t, asset-mono-filter)};
 }
 
 // Doppio focus ring: anello primario + separatore chiaro/scuro.

@@ -1,0 +1,41 @@
+// =============================================================================
+// EFFECT — FLARE
+// Linee luminose con riflesso centrale (Figma `Line/Orange Flare`,
+// `Line/Ice Flare`). Identiche nei due temi.
+//   • `flare-custom-properties()`        → --flare-orange / --flare-ice
+//   • `flare-line($tone, $thickness)`    → linea flare con glow abbinato
+// =============================================================================
+
+@use "sass:map";
+@use "glow" as g;
+
+$flare: (
+  orange: linear-gradient(90deg, rgba(255, 151, 12, 0) 0%, #ffb026 35%, #fff0b0 50%, #ff980c 65%, rgba(255, 151, 12, 0) 100%),
+  ice: linear-gradient(90deg, rgba(58, 145, 208, 0) 0%, #59b7ff 36%, #f0faff 50%, #5cb9ff 66%, rgba(58, 145, 208, 0) 100%),
+);
+
+// Glow associato a ogni flare.
+$_flare-glow: (
+  orange: orange,
+  ice: blue,
+);
+
+@mixin flare-custom-properties($theme: dark) {
+  @each $name, $value in $flare {
+    --flare-#{$name}: #{$value};
+  }
+}
+
+@mixin flare-line($tone: orange, $thickness: 2px) {
+  @if not map.has-key($flare, $tone) {
+    @error "[flare] tono `#{$tone}` sconosciuto. Disponibili: #{map.keys($flare)}";
+  }
+
+  display: block;
+  inline-size: 100%;
+  block-size: $thickness;
+  pointer-events: none;
+  background: var(--flare-#{$tone});
+
+  @include g.glow(map.get($_flare-glow, $tone));
+}

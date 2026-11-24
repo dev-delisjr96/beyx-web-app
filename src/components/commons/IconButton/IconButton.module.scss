@@ -1,8 +1,8 @@
-@use "../../../styles/beyx" as b;
 @use "../../../styles/colors" as c;
+@use "../../../styles/mixins" as m;
 
 .button {
-  @include b.button-reset;
+  @include m.button-reset;
 
   display: inline-grid;
   flex-shrink: 0;
@@ -13,6 +13,10 @@
 
   &:hover {
     color: var(--text-primary);
+    .icon{
+      color: var(--brand-blue);
+      transition: color 0.15s ease;
+    }
   }
 
   &:focus-visible {

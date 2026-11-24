@@ -1,8 +1,8 @@
-@use "../../../styles/beyx" as b;
 @use "../../../styles/colors" as c;
+@use "../../../styles/mixins" as m;
 
 .dropDown {
-  @include b.field;
+  @include m.field;
 
   inline-size: 100%;
   border-width: 0.5px;
@@ -14,7 +14,7 @@
 
 .trigger,
 .option {
-  @include b.button-reset;
+  @include m.button-reset;
 
   display: flex;
   gap: 20px;

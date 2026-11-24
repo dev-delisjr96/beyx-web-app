@@ -1,4 +1,4 @@
-@use "../../../styles/beyx" as b;
+@use "../../../styles/fonts" as f;
 
 .text {
   margin: 0;
@@ -6,27 +6,27 @@
 }
 
 .title {
-  @include b.beyx-text(11px, 600, 13px);
+  @include f.compact-text(11px, 600, 13px);
 }
 
 .titleStrong {
-  @include b.beyx-text(11px, 700);
+  @include f.compact-text(11px, 700);
 }
 
 .label {
-  @include b.beyx-text(10px, 700);
+  @include f.compact-text(10px, 700);
 }
 
 .meta {
-  @include b.beyx-text(10px, 500, 20px);
+  @include f.compact-text(10px, 500, 20px);
 }
 
 .caption {
-  @include b.beyx-text(10px, 400, 13px);
+  @include f.compact-text(10px, 400, 13px);
 }
 
 .navigation {
-  @include b.beyx-text(13px, 500, 20px);
+  @include f.compact-text(13px, 500, 20px);
 }
 
 .tone-primary {

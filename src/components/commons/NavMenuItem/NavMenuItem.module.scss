@@ -1,16 +1,24 @@
-@use "../../../styles/beyx" as b;
 @use "../../../styles/colors" as c;
+@use "../../../styles/mixins" as m;
 
 .item {
-  @include b.button-reset;
+  @include m.button-reset;
 
   display: grid;
   place-items: center;
   inline-size: 100%;
   block-size: 40px;
-  color: var(--beyx-header-foreground);
+  color: var(--header-foreground);
   text-align: center;
-  border-top: 0.5px solid var(--beyx-header-item-border);
+  border-top: 0.5px solid var(--header-item-border);
+
+  &:hover{
+    transition: all 0.3s ease-in-out;
+    @include c.focus-visible-ring;
+    background: var(--header-item-active);
+    border-bottom: 0.5px solid var(--header-item-border);
+    outline-offset: -2px;
+  }
 
   &:focus-visible {
     @include c.focus-visible-ring;
@@ -20,6 +28,6 @@
 }
 
 .active {
-  background: var(--beyx-header-item-active);
-  border-bottom: 0.5px solid var(--beyx-header-item-border);
+  background: var(--header-item-active);
+  border-bottom: 0.5px solid var(--header-item-border);
 }
